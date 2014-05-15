@@ -69,4 +69,20 @@ GeoJSON.FeatureCollection = {
   features: [ GeoJSON.Feature ]
 }
 
+GeoJSON.requiredAddressFeature = {
+  id        : { type: "String" },
+  'type'    : { type: String, default: "Feature", required:true },
+  geometry  : {
+    'type':{type:String,default:"Point",required:true},
+    coordinates:{type:"Array",required:true}
+  },
+  properties: {type: "Object"}
+}
+
+
+GeoJSON.validatePointCoordinates = function(value,message){
+  "use strict";
+  var msg = message || "Must provide valid coordinates for Point Geometry";
+}
+
 
