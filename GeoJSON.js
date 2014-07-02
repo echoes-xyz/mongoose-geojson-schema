@@ -14,32 +14,32 @@ module.exports = GeoJSON = {};
 
 GeoJSON.Geometry = {
 	'type': { type: String, required: true, enum: ["Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon"] },
-	coordinates: [Object]
+	coordinates: []
 }
 
 GeoJSON.Point = {
 	'type': { type: String, required: true, default: "Point" },
-	coordinates: [Number]
+	coordinates: []
 };
 
 GeoJSON.MultiPoint = {
 	'type': { type: String, required: true, default: "MultiPoint" },
-	coordinates: [Array]
+	coordinates: []
 };
 
 GeoJSON.MultiLineString = {
 	'type': { type: String, required: true, default: "MultiLineString" },
-	coordinates: [Array]
+	coordinates: []
 }
 
 GeoJSON.Polygon = {
 	'type': { type: String, required: true, default: "Polygon" },
-	coordinates: [Array]
+	coordinates: []
 };
 
 GeoJSON.MultiPolygon = {
 	'type': { type: String, required: true, default: "MultiPolygon" },
-	coordinates: [Array]
+	coordinates: []
 };
 
 GeoJSON.GeometryCollection = {
