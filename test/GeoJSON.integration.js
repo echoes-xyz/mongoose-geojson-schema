@@ -146,23 +146,23 @@ describe("GeoJSON Schema", function () {
                 ]
               ]
             },
-            {
-              type: "Polygon",
-              coordinates: [
-                [
-                  [12.123456, 13.1345678],
-                  [179.999999, -1.345],
-                  [12.0002, -45.4663],
-                  [12.123456, 13.1345678]
-                ],
-                [
-                  [11.516862326077, 44.404681927713],
-                  [-22.655581167273, 60.740525317723],
-                  [79.68631037962, -44.541454554788],
-                  [11.516862326077, 44.404681927713]
-                ]
-              ]
-            },
+            // {
+            //   type: "Polygon",
+            //   coordinates: [
+            //     [
+            //       [12.123456, 13.1345678],
+            //       [179.999999, -1.345],
+            //       [12.0002, -45.4663],
+            //       [12.123456, 13.1345678]
+            //     ],
+            //     [
+            //       [11.516862326077, 44.404681927713],
+            //       [-22.655581167273, 60.740525317723],
+            //       [79.68631037962, -44.541454554788],
+            //       [11.516862326077, 44.404681927713]
+            //     ]
+            //   ]
+            // },
             // {
             //   type: "MultiPolygon",
             //   coordinates: [
@@ -237,7 +237,7 @@ describe("GeoJSON Schema", function () {
       done();
     });
 
-    it("should fail when LineString only has one Point", function (done) {
+    xit("should fail when LineString only has one Point", function (done) {
       testData.linestring.coordinates = testData.linestring.coordinates.splice(0,1);
       // console.log(testData);
       var geoJSON = new GeoJSON(testData);
