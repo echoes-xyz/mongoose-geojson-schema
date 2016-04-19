@@ -4,17 +4,27 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.initConfig({
+    jshint: {
+      options: {
+        node: true,
+        mocha: true,
+        laxcomma: true
+      },
+      all: ['Gruntfile.js', 'GeoJSON.js', 'test/**/*.js']
+    },
     // Configure a mochaTest task
     mochaTest: {
       test: {
         options: {
           reporter: 'spec'
         },
-        src: ['test/**/*.js']
+        src: ['test/**/*.integration.js']
       }
     }
   });
 
-  grunt.registerTask('default', 'mochaTest');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+
+  grunt.registerTask('default', ['jshint', 'mochaTest']);
 
 };
