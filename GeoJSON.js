@@ -104,16 +104,15 @@ function LineString(key, options) {
  mongoose.SchemaType.call(this, key, options, 'LineString');
 }
 
-function validateLineString(linestring) {
-  for (var i = 0; i < linestring.length; i++) {
-    validatePoint(linestring[i]);
+function validateLineString(coordinates) {
+  for (var i = 0; i < coordinates.length; i++) {
+    validatePoint(coordinates[i]);
   }
-  return linestring;
 }
 
 LineString.prototype = Object.create(mongoose.SchemaType.prototype);
 
-LineString.prototype.cast = function(point) {
+LineString.prototype.cast = function(linestring) {
   if (!linestring.type) {
     throw new mongoose.SchemaType.CastError('GeoJSON.LineString should have a type');
   }
@@ -122,11 +121,11 @@ LineString.prototype.cast = function(point) {
     throw new mongoose.SchemaType.CastError('GeoJSON.LineString type must be LineString');
   }
   // must have at least two Points
-  if (linestring.length < 2) {
+  if (linestring.coordinates.length < 2) {
     throw new mongoose.SchemaType.CastError('GeoJSON.LineString type must have at least two Points');
   }
-  validateLineString(point);
-  return point;
+  validateLineString(linestring.coordinates);
+  return linestring;
 };
 
 mongoose.Schema.Types.LineString = LineString;

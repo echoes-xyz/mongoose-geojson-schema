@@ -30,21 +30,6 @@ describe("GeoJSON Schema", function () {
           type: "Point",
           coordinates: [12.123456, 13.134578]
         },
-        multilinestring: {
-          type: "MultiLineString",
-          coordinates: [
-            [
-              [12.123456, 13.1345678],
-              [179.999999, -1.345],
-              [12.0002, -45.4663]
-            ],
-            [
-              [11.516862326077, 44.404681927713],
-              [-22.655581167273, 60.740525317723],
-              [79.68631037962, -44.541454554788]
-            ]
-          ]
-        },
         polygon: {
           type: "Polygon",
           coordinates: [
@@ -271,7 +256,7 @@ describe("GeoJSON Schema", function () {
 
   });
 
-  xdescribe("GeoJSON LineString", function () {
+  describe("GeoJSON LineString", function () {
     var lineStringData;
 
     beforeEach(function() {
@@ -301,28 +286,29 @@ describe("GeoJSON Schema", function () {
     });
 
     it("should fail with a badly formed LineString", function (done) {
-      lineStringData.point.coordinates[0][2] = 12345349884848;
+      lineStringData.linestring.coordinates[0][2] = 12345349884848;
+      lineStringData.linestring.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors['point.coordinates'].message).to.contain('is not a correctly formed GeoJson LineString object');
+      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
       done();
     });
 
     it("should fail when LineString is not described as a LineString", function (done) {
-      lineStringData.point.type = "Square";
+      lineStringData.linestring.type = "Square";
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors['point.type'].message).to.contain('is not a valid enum value for path');
+      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
       done();
     });
 
-    xit("should fail when LineString only has one LineString", function (done) {
+    it("should fail when LineString only has one LineString", function (done) {
       lineStringData.linestring.coordinates = lineStringData.linestring.coordinates.splice(0,1);
       // console.log(lineStringData);
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
       // console.log(error);
-      expect(error.errors['point.type'].message).to.contain('Square must be LineString');
+      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
       done();
     });
 
