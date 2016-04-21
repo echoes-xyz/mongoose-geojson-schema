@@ -9,10 +9,13 @@
  * Copyright RideAmigos (http://rideamigos.com)
  **/
 
-var GeoJSON;
-module.exports = GeoJSON = {};
+var GeoJSON = {};
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+
+function Point(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Point');
+}
 
 function validatePoint(array) {
   if (!array) { return false; }
@@ -21,9 +24,36 @@ function validatePoint(array) {
   // longitude should be first - mongo schema
   if (array[0] > 180 || array[0] < -180) { return false; }
   // latitude
-  if (array[1] > 85 || array[1] < -85.05115) { return false; }
+  if (array[1] > 90 || array[1] < -90) { return false; }
   return true;
 }
+
+Point.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Point.prototype.cast = function(point) {
+  console.log(point);
+  if (!point.type) {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point', point.type + ' should be ');
+  }
+  if (point.type !== 'Point') {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point type must be Point');
+  }
+  if (typeof point.coordinates !== 'object') {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point', point.coordinates + ' should be an array');
+  }
+  if (point.coordinates.length < 2 || point.coordinates.length > 3) {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point', point.coordinates + ' should be contain two coordinates');
+  }
+  if (point.coordinates[0] > 180 || point.coordinates[0] < -180) {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point', point.coordinates[0] + ' should be within the boundaries of latitude');
+  }
+  if (point.coordinates[0] > 90 || point.coordinates[0] < -90) {
+    throw new mongoose.SchemaType.CastError('GeoJSON.Point', point.coordinates[0] + ' should be within the boundaries of latitude');
+  }
+  return point;
+};
+
+mongoose.Schema.Types.Point = Point;
 
 function validateMultiPoint(array) {
   if (!array) { return false; }
@@ -33,7 +63,7 @@ function validateMultiPoint(array) {
     // longitude should be first - mongo schema
     if (array[i][0] > 180 || array[0] < -180) { return false; }
     // latitude
-    if (array[i][1] > 85 || array[1] < -85.05115) { return false; }
+    if (array[i][1] > 90 || array[1] < -90) { return false; }
   }
   return true;
 }
@@ -47,7 +77,7 @@ function validateLineString(array) {
     // longitude should be first - mongo schema
     if (array[i][0] > 180 || array[0] < -180) { return false; }
     // latitude
-    if (array[i][1] > 85 || array[1] < -85.05115) { return false; }
+    if (array[i][1] > 90 || array[1] < -90) { return false; }
   }
   return true;
 }
@@ -62,7 +92,7 @@ function validateMultiLineString(array) {
       // longitude should be first - mongo schema
       if (array[i][j][0] > 180 || array[0] < -180) { return false; }
       // latitude
-      if (array[i][j][1] > 85 || array[1] < -85.05115) { return false; }
+      if (array[i][j][1] > 90 || array[1] < -90) { return false; }
     }
   }
   return true;
@@ -83,7 +113,7 @@ function validatePolygon(array) {
       // longitude should be first - mongo schema
       if (array[i][j][0] > 180 || array[0] < -180) { return false; }
       // latitude
-      if (array[i][j][1] > 85 || array[1] < -85.05115) { return false; }
+      if (array[i][j][1] > 90 || array[1] < -90) { return false; }
     }
   }
   return true;
@@ -105,7 +135,7 @@ function validateMultiPolygon(array) {
         // longitude should be first - mongo schema
         if (array[i][j][k][0] > 180 || array[0] < -180) { return false; }
         // latitude
-        if (array[i][j][k][1] > 85 || array[1] < -85.05115) { return false; }
+        if (array[i][j][k][1] > 90 || array[1] < -90) { return false; }
       }
     }
   }
@@ -142,132 +172,117 @@ function validateGeometry(array) {
   return true;
 }
 
-GeoJSON.Point = {
-  type: {
-    $type: String,
-    enum: ["Point"],
-    default: "Point"
-  },
-  coordinates: {
-    $type: [Number],
-    validate: {
-      validator: validatePoint,
-      message: "{VALUE} is not a correctly formed GeoJson Point object"
-    }
-  }
-};
-
-GeoJSON.MultiPoint = {
-  type: {
-    $type: String,
-    enum: ["MultiPoint"],
-    default: "MultiPoint"
-  },
-  coordinates: [{
-    $type: [Number],
-    validate: {
-      validator: validateMultiPoint,
-      message: "{VALUE} is not a correctly formed GeoJson MultiPoint object"
-    }
-  }]
-};
-
-// @TODO find a way to test nested arrays
-GeoJSON.LineString = {
-  type: {
-    $type: String,
-    enum: ["LineString"],
-    default: "LineString"
-  },
-  coordinates: [{
-    $type: [Number],
-    validate: {
-      validator: validateLineString,
-      message: "{VALUE} is not a correctly formed GeoJson LineString object"
-    }
-  }]
-};
-
-GeoJSON.MultiLineString = {
-  type: {
-    $type: String,
-    enum: ["MultiLineString"],
-    default: "MultiLineString"
-  },
-  coordinates: [{
-    $type: [[Number]],
-    validate: {
-      validator: validateMultiLineString,
-      message: "{VALUE} is not a correctly formed GeoJson MultiLineString object"
-    }
-  }]
-};
-
-// @TODO must test that the first ring is the exterior ring
-GeoJSON.Polygon = {
-  type: {
-    $type: String,
-    enum: ["Polygon"],
-    default: "Polygon"
-  },
-  coordinates: [{
-    $type: [[Number]],
-    validate: {
-      validator: validatePolygon,
-      message: "{VALUE} is not a correctly formed GeoJson Polygon object"
-    }
-  }]
-};
-
-GeoJSON.MultiPolygon = {
-  type: {
-    $type: String,
-    enum: ["MultiPolygon"],
-    default: "MultiPolygon"
-  },
-  coordinates: [{
-    $type: [[[Number]]],
-    validate: {
-      validator: validateMultiPolygon,
-      message: "{VALUE} is not a correctly formed GeoJson MultiPolygon object"
-    }
-  }]
-};
-
-GeoJSON.GeometryCollection = {
-  type: {
-    $type: String,
-    default: "GeometryCollection"
-  },
-  geometries: {
-    $type: [Schema.Types.Mixed],
-    validate: {
-      validator: validateGeometry
-    }
-  }
-};
-
-GeoJSON.Feature = {
-  id        : { type: "String" },
-  'type'    : { type: String, default: "Feature" },
-  geometry  : GeoJSON.Geometry,
-  properties: {type: "Object"}
-};
-
-GeoJSON.FeatureCollection = {
-  'type'  : { type: String, default: "FeatureCollection" },
-  features: [ GeoJSON.Feature ]
-};
-
-GeoJSON.requiredAddressFeature = {
-  id        : { type: "String" },
-  'type'    : { type: String, default: "Feature", required:true },
-  geometry  : {
-    'type':{type:String,default:"Point",required:true},
-    coordinates:{type:"Array",required:true}
-  },
-  properties: {type: "Object"}
-};
+// GeoJSON.MultiPoint = {
+//   type: {
+//     $type: String,
+//     enum: ["MultiPoint"],
+//     default: "MultiPoint"
+//   },
+//   coordinates: [{
+//     $type: [Number],
+//     validate: {
+//       validator: validateMultiPoint,
+//       message: "{VALUE} is not a correctly formed GeoJson MultiPoint object"
+//     }
+//   }]
+// };
+//
+// // @TODO find a way to test nested arrays
+// GeoJSON.LineString = {
+//   type: {
+//     $type: String,
+//     enum: ["LineString"],
+//     default: "LineString"
+//   },
+//   coordinates: [{
+//     $type: [Number],
+//     validate: {
+//       validator: validateLineString,
+//       message: "{VALUE} is not a correctly formed GeoJson LineString object"
+//     }
+//   }]
+// };
+//
+// GeoJSON.MultiLineString = {
+//   type: {
+//     $type: String,
+//     enum: ["MultiLineString"],
+//     default: "MultiLineString"
+//   },
+//   coordinates: [{
+//     $type: [[Number]],
+//     validate: {
+//       validator: validateMultiLineString,
+//       message: "{VALUE} is not a correctly formed GeoJson MultiLineString object"
+//     }
+//   }]
+// };
+//
+// // @TODO must test that the first ring is the exterior ring
+// GeoJSON.Polygon = {
+//   type: {
+//     $type: String,
+//     enum: ["Polygon"],
+//     default: "Polygon"
+//   },
+//   coordinates: [{
+//     $type: [[Number]],
+//     validate: {
+//       validator: validatePolygon,
+//       message: "{VALUE} is not a correctly formed GeoJson Polygon object"
+//     }
+//   }]
+// };
+//
+// GeoJSON.MultiPolygon = {
+//   type: {
+//     $type: String,
+//     enum: ["MultiPolygon"],
+//     default: "MultiPolygon"
+//   },
+//   coordinates: [{
+//     $type: [[[Number]]],
+//     validate: {
+//       validator: validateMultiPolygon,
+//       message: "{VALUE} is not a correctly formed GeoJson MultiPolygon object"
+//     }
+//   }]
+// };
+//
+// GeoJSON.GeometryCollection = {
+//   type: {
+//     $type: String,
+//     default: "GeometryCollection"
+//   },
+//   geometries: {
+//     $type: [Schema.Types.Mixed],
+//     validate: {
+//       validator: validateGeometry
+//     }
+//   }
+// };
+//
+// GeoJSON.Feature = {
+//   id        : { type: "String" },
+//   'type'    : { type: String, default: "Feature" },
+//   geometry  : GeoJSON.Geometry,
+//   properties: {type: "Object"}
+// };
+//
+// GeoJSON.FeatureCollection = {
+//   'type'  : { type: String, default: "FeatureCollection" },
+//   features: [ GeoJSON.Feature ]
+// };
+//
+// GeoJSON.requiredAddressFeature = {
+//   id        : { type: "String" },
+//   'type'    : { type: String, default: "Feature", required:true },
+//   geometry  : {
+//     'type':{type:String,default:"Point",required:true},
+//     coordinates:{type:"Array",required:true}
+//   },
+//   properties: {type: "Object"}
+// };
 
 
 GeoJSON.validatePointCoordinates = function(value,message){
