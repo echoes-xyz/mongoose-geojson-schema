@@ -10,10 +10,10 @@ var TestSchema = new mongoose.Schema({
   multipoint: mongoose.Schema.Types.MultiPoint,
   linestring: mongoose.Schema.Types.LineString,
   multilinestring: mongoose.Schema.Types.MultiLineString,
-  // polygon: mongoose.Schema.Types.Polygon,
-  // multipolygon: mongoose.Schema.Types.MultiPolygon,
-  // geometrycollection: mongoose.Schema.Types.GeometryCollection,
-  // feature: mongoose.Schema.Types.Feature,
+  polygon: mongoose.Schema.Types.Polygon,
+  multipolygon: mongoose.Schema.Types.MultiPolygon,
+  geometrycollection: mongoose.Schema.Types.GeometryCollection,
+  feature: mongoose.Schema.Types.Feature,
   // featurecollection: mongoose.Schema.Types.FeatureCollection,
   // requireaddressfeature: GeoJSON.requiredAddressFeature
 }, { typeKey: '$type', collection: 'echoes' });
