@@ -359,3 +359,5 @@ FeatureCollection.prototype.cast = function(featurecollection) {
   validateFeatureCollection(featurecollection);
   return featurecollection;
 };
+
+mongoose.Schema.Types.FeatureCollection = FeatureCollection;
