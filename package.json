@@ -4,7 +4,7 @@
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "GeoJSON.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha test/*"
   },
   "keywords": [
     "mongoose",
@@ -22,9 +22,10 @@
   "author": "Ben Dalton (ben@rideamigos.com)",
   "license": "MIT",
   "devDependencies": {
+    "chai": "~1.9.1",
     "grunt": "~0.4.5",
     "grunt-mocha-test": "~0.10.2",
-    "mongoose": "~3.8.9",
-    "chai": "~1.9.1"
+    "mocha": "^2.4.5",
+    "mongoose": "~3.8.9"
   }
 }
