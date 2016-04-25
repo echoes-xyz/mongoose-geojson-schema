@@ -483,7 +483,7 @@ describe("GeoJSON Schema", function () {
 
   });
 
-  xdescribe("Feature", function () {
+  describe("Feature", function () {
     var featureData;
 
     beforeEach(function() {
@@ -507,6 +507,9 @@ describe("GeoJSON Schema", function () {
                 [11.516862326077, 44.404681927713]
               ]
             ]
+          },
+          properties: {
+            property1: "How nice."
           }
         }
       };
@@ -529,7 +532,7 @@ describe("GeoJSON Schema", function () {
       featureData.feature.geometry.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.message).to.contain('Cast to Feature failed for value');
+      expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
       done();
     });
 
@@ -537,7 +540,75 @@ describe("GeoJSON Schema", function () {
       featureData.feature.geometry.type = "Square";
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.message).to.contain('Cast to Feature failed for value');
+      expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
+      done();
+    });
+
+  });
+
+  describe("FeatureCollection", function () {
+    var featureCollectionData;
+
+    beforeEach(function() {
+      featureCollectionData = {
+        title: "A test object",
+        featurecollection: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Polygon",
+                coordinates: [
+                  [
+                    [12.123456, 13.1345678],
+                    [179.999999, -1.345],
+                    [12.0002, -45.4663],
+                    [12.123456, 13.1345678]
+                  ],
+                  [
+                    [11.516862326077, 44.404681927713],
+                    [-22.655581167273, 60.740525317723],
+                    [79.68631037962, -44.541454554788],
+                    [11.516862326077, 44.404681927713]
+                  ]
+                ]
+              },
+              properties: {
+                property1: "How nice."
+              }
+            }
+          ]
+        }
+      };
+    });
+
+    it("should return a valid FeatureCollection", function (done) {
+      var geoJSON = new GeoJSON(featureCollectionData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        console.log(error);
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should fail with a badly formed FeatureCollection", function (done) {
+      featureCollectionData.featurecollection.features[0].geometry.coordinates[0][0][2] = 12345349884848;
+      featureCollectionData.featurecollection.features[0].geometry.coordinates[0][0][3] = 9845674598;
+      var geoJSON = new GeoJSON(featureCollectionData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
+      done();
+    });
+
+    it("should fail when a geometry is not described correctly", function (done) {
+      featureCollectionData.featurecollection.features[0].geometry.type = "Square";
+      var geoJSON = new GeoJSON(featureCollectionData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
       done();
     });
 

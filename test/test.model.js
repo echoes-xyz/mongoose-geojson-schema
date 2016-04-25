@@ -14,7 +14,7 @@ var TestSchema = new mongoose.Schema({
   multipolygon: mongoose.Schema.Types.MultiPolygon,
   geometrycollection: mongoose.Schema.Types.GeometryCollection,
   feature: mongoose.Schema.Types.Feature,
-  // featurecollection: mongoose.Schema.Types.FeatureCollection,
+  featurecollection: mongoose.Schema.Types.FeatureCollection,
   // requireaddressfeature: GeoJSON.requiredAddressFeature
 }, { typeKey: '$type', collection: 'echoes' });
 

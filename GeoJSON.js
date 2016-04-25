@@ -308,9 +308,7 @@ function Feature(key, options) {
   mongoose.SchemaType.call(this, key, options, 'Feature');
 }
 
-Feature.prototype = Object.create(mongoose.SchemaType.prototype);
-
-Feature.prototype.cast = function(feature) {
+function validateFeature(feature) {
   if (!feature.type) {
     throw new mongoose.SchemaType.CastError('Feature must have a type');
   }
@@ -322,6 +320,12 @@ Feature.prototype.cast = function(feature) {
     throw new mongoose.SchemaType.CastError('Feature must have a geometry');
   }
   validateGeometry(feature.geometry);
+}
+
+Feature.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Feature.prototype.cast = function(feature) {
+  validateFeature(feature);
   return feature;
 };
 
