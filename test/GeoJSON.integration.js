@@ -43,7 +43,7 @@ describe("GeoJSON Schema", function () {
     });
 
     it("should return a valid Point", function (done) {
-      var geoJSON = new GeoJSON(pointData);
+    var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       if (error) {
         // console.log(error);
