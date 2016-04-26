@@ -4,7 +4,7 @@
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "GeoJSON.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt"
   },
   "keywords": [
     "mongoose",
