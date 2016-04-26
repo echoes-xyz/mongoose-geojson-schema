@@ -21,6 +21,10 @@ describe("GeoJSON Schema", function () {
   var multiLineStringData;
   var polygonData;
   var multiPolygonData;
+  var geometryData;
+  var geometryCollectionData;
+  var featureData;
+  var featureCollectionData;
 
   before(function () {
     GeoJSON.find({}).removeAsync().then();
@@ -355,8 +359,81 @@ describe("GeoJSON Schema", function () {
 
   });
 
+  describe("Geometry", function () {
+
+    beforeEach(function() {
+      geometryData = {
+        title: "A test object",
+        geometry: {
+          type: "LineString",
+          coordinates: [
+            [12.123456, 13.1345678],
+            [179.999999, -1.345],
+            [12.0002, -45.4663]
+          ]
+        }
+      };
+    });
+
+    it("should return a valid Geometry with LineString", function (done) {
+      var geoJSON = new GeoJSON(geometryData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        console.log(error);
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should return a valid Geometry with MultiPoint", function (done) {
+      geometryData.geometry = {
+        type: "MultiLineString",
+        coordinates: [
+          [
+            [12.123456, 13.1345678],
+            [179.999999, -1.345],
+            [12.0002, -45.4663]
+          ],
+          [
+            [11.516862326077, 44.404681927713],
+            [-22.655581167273, 60.740525317723],
+            [79.68631037962, -44.541454554788]
+          ]
+        ]
+      };
+      var geoJSON = new GeoJSON(geometryData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        console.log(error);
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should fail with a badly formed Geometry", function (done) {
+      geometryData.geometry.coordinates[0][2] = 12345349884848;
+      geometryData.geometry.coordinates[0][3] = 9845674598;
+      var geoJSON = new GeoJSON(geometryData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
+      done();
+    });
+
+    it("should fail when a geometry is not described correctly", function (done) {
+      geometryData.geometry.type = "Square";
+      var geoJSON = new GeoJSON(geometryData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
+      done();
+    });
+
+  });
+
   describe("GeometryCollection", function () {
-    var geometryCollectionData;
 
     beforeEach(function() {
       geometryCollectionData = {
@@ -484,7 +561,6 @@ describe("GeoJSON Schema", function () {
   });
 
   describe("Feature", function () {
-    var featureData;
 
     beforeEach(function() {
       featureData = {
@@ -547,7 +623,6 @@ describe("GeoJSON Schema", function () {
   });
 
   describe("FeatureCollection", function () {
-    var featureCollectionData;
 
     beforeEach(function() {
       featureCollectionData = {

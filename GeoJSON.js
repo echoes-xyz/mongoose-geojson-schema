@@ -25,19 +25,15 @@ function Point(key, options) {
 function validatePoint(coordinates) {
   // must be an array (object)
   if (typeof coordinates !== 'object') {
-    throw new mongoose.SchemaType.CastError('Point', coordinates + ' should be an array');
+    throw new mongoose.SchemaType.CastError('Point', coordinates + ' must be an array');
   }
   // must have 2/3 points
   if (coordinates.length < 2 || coordinates.length > 3) {
-    throw new mongoose.SchemaType.CastError('Point', coordinates + ' should be contain two coordinates');
+    throw new mongoose.SchemaType.CastError('Point', coordinates + ' must contain two coordinates');
   }
   // longitude must be within bounds
-  if (coordinates[0] > 180 || coordinates[0] < -180) {
-    throw new mongoose.SchemaType.CastError('Point', coordinates[0] + ' should be within the boundaries of latitude');
-  }
-  // latitude must be within bounds
-  if (coordinates[1] > 90 || coordinates[1] < -90) {
-    throw new mongoose.SchemaType.CastError('Point', coordinates[1] + ' should be within the boundaries of latitude');
+  if (typeof coordinates[0] !== 'number' || typeof coordinates[1] !== 'number') {
+    throw new mongoose.SchemaType.CastError('Point must have two numbers');
   }
 }
 
@@ -77,7 +73,7 @@ MultiPoint.prototype = Object.create(mongoose.SchemaType.prototype);
 MultiPoint.prototype.cast = function(multipoint) {
   // must be an array (object)
   if (typeof multipoint.coordinates !== 'object') {
-    throw new mongoose.SchemaType.CastError('MultiPoint should be an array');
+    throw new mongoose.SchemaType.CastError('MultiPoint must be an array');
   }
   if (!multipoint.type) {
     throw new mongoose.SchemaType.CastError('MultiPoint must have a type');
@@ -147,7 +143,7 @@ MultiLineString.prototype = Object.create(mongoose.SchemaType.prototype);
 MultiLineString.prototype.cast = function(multilinestring) {
   // must be an array (object)
   if (typeof multilinestring.coordinates !== 'object') {
-    throw new mongoose.SchemaType.CastError('MultiLineString should be an array');
+    throw new mongoose.SchemaType.CastError('MultiLineString must be an array');
   }
   if (!multilinestring.type) {
     throw new mongoose.SchemaType.CastError('MultiLineString', multilinestring.type + ' must have a type');
@@ -182,15 +178,15 @@ function arraysEqual(arr1, arr2) {
 
 function validatePolygon(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
-    // The LinearRing elements should have at least four Points
+    // The LinearRing elements must have at least four Points
     if (coordinates[i].length < 4) {
-      throw new mongoose.SchemaType.CastError('Each Polygon LinearRing should have at least four elements');
+      throw new mongoose.SchemaType.CastError('Each Polygon LinearRing must have at least four elements');
     }
-    // the LinearRing objects should have identical start and end values
+    // the LinearRing objects must have identical start and end values
     if (!arraysEqual(coordinates[i][0], coordinates[i][coordinates[i].length-1])) {
-      throw new mongoose.SchemaType.CastError('Each Polygon LinearRing should have an identical first and last point');
+      throw new mongoose.SchemaType.CastError('Each Polygon LinearRing must have an identical first and last point');
     }
-    // otherwise the LinearRings should correspond to a LineString
+    // otherwise the LinearRings must correspond to a LineString
     validateLineString(coordinates[i]);
   }
 }
@@ -231,7 +227,7 @@ MultiPolygon.prototype = Object.create(mongoose.SchemaType.prototype);
 MultiPolygon.prototype.cast = function(multipolygon) {
   // must be an array (object)
   if (typeof multipolygon.coordinates !== 'object') {
-    throw new mongoose.SchemaType.CastError('MultiPolygon should be an array');
+    throw new mongoose.SchemaType.CastError('MultiPolygon must be an array');
   }
   if (!multipolygon.type) {
     throw new mongoose.SchemaType.CastError('MultiPolygon must have a type');
@@ -247,18 +243,12 @@ MultiPolygon.prototype.cast = function(multipolygon) {
 mongoose.Schema.Types.MultiPolygon = MultiPolygon;
 
 /**
-* @SchemaType GeometryCollection
+* @SchemaType Geometry
 *
 */
 
-function GeometryCollection(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'GeometryCollection');
-}
-
-function validateGeometries(geometries) {
-  for (var i = 0; i < geometries.length; i++) {
-    validateGeometry(geometries[i]);
-  }
+function Geometry(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Geometry');
 }
 
 function validateGeometry(geometry) {
@@ -286,12 +276,41 @@ function validateGeometry(geometry) {
   }
 }
 
+Geometry.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Geometry.prototype.cast = function(geometry) {
+  // console.log(geometry);
+  // must be an array (object)
+  if (!geometry.type) {
+    throw new mongoose.SchemaType.CastError('Geometry must must have a type');
+  }
+  validateGeometry(geometry);
+  return geometry;
+};
+
+mongoose.Schema.Types.Geometry = Geometry;
+
+/**
+* @SchemaType GeometryCollection
+*
+*/
+
+function GeometryCollection(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'GeometryCollection');
+}
+
+function validateGeometries(geometries) {
+  for (var i = 0; i < geometries.length; i++) {
+    validateGeometry(geometries[i]);
+  }
+}
+
 GeometryCollection.prototype = Object.create(mongoose.SchemaType.prototype);
 
 GeometryCollection.prototype.cast = function(geometrycollection) {
   // must be an array (object)
   if (typeof geometrycollection.geometries !== 'object') {
-    throw new mongoose.SchemaType.CastError('GeometryCollection should be an array');
+    throw new mongoose.SchemaType.CastError('GeometryCollection must be an array');
   }
   validateGeometries(geometrycollection.geometries);
   return geometrycollection;
