@@ -43,7 +43,25 @@ describe("GeoJSON Schema", function () {
     });
 
     it("should return a valid Point", function (done) {
-    var geoJSON = new GeoJSON(pointData);
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        // console.log(error);
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should pass with a crs name object", function (done) {
+      pointData.point.crs = {
+        type: "name",
+        properties: {
+          name: "urn:ogc:def:crs:OGC:1.3:CRS84"
+        }
+      };
+      var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       if (error) {
         // console.log(error);

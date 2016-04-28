@@ -12,6 +12,31 @@
 var GeoJSON = {};
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var crs = {};
+
+function validateCrs(crs) {
+  if (typeof crs !== 'object' && crs !== null) {
+    throw new mongoose.SchemaType.CastError('Crs must be an object or null');
+  }
+  if (crs === null) {
+    return;
+  }
+  if (!crs.type) {
+    throw new mongoose.SchemaType.CastError('Crs must have a type');
+  }
+  if (crs.type !== 'name' && crs.type !== 'link') {
+    throw new mongoose.SchemaType.CastError('Crs must be either a name or link');
+  }
+  if (!crs.properties) {
+    throw new mongoose.SchemaType.CastError('Crs must contain a properties object');
+  }
+  if (crs.type === 'name' && !crs.properties.name) {
+    throw new mongoose.SchemaType.CastError('Crs specified by name must have a name property');
+  }
+  if (crs.type === 'link' && !crs.properties.href || crs.type === 'link' && !crs.properties.type) {
+    throw new mongoose.SchemaType.CastError('Crs specified by link must have a name and href property');
+  }
+}
 
 /**
 * @SchemaType Point
@@ -25,11 +50,11 @@ function Point(key, options) {
 function validatePoint(coordinates) {
   // must be an array (object)
   if (typeof coordinates !== 'object') {
-    throw new mongoose.SchemaType.CastError('Point', coordinates + ' must be an array');
+    throw new mongoose.SchemaType.CastError('Point' + coordinates + ' must be an array');
   }
   // must have 2/3 points
   if (coordinates.length < 2 || coordinates.length > 3) {
-    throw new mongoose.SchemaType.CastError('Point', coordinates + ' must contain two coordinates');
+    throw new mongoose.SchemaType.CastError('Point' + coordinates + ' must contain two coordinates');
   }
   // longitude must be within bounds
   if (typeof coordinates[0] !== 'number' || typeof coordinates[1] !== 'number') {
@@ -46,6 +71,11 @@ Point.prototype.cast = function(point) {
   // type must be Point
   if (point.type !== 'Point') {
     throw new mongoose.SchemaType.CastError('Point type must be Point');
+  }
+  // check for crs
+  if (point.crs) {
+    crs = point.crs;
+    validateCrs(crs);
   }
   validatePoint(point.coordinates);
   return point;
