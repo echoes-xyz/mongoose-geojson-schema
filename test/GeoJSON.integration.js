@@ -8,7 +8,6 @@ var chai = require('chai'),
   expect = chai.expect,
 	mongoose = require('bluebird').promisifyAll(require('mongoose')),
 	ObjectId = mongoose.Types.ObjectId,
-	GeoJSON = require('../GeoJSON'),
 	geoJSONSchema = require('./test.model');
 
 describe("GeoJSON Schema", function () {
