@@ -64,12 +64,72 @@ describe("GeoJSON Schema", function () {
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       if (error) {
-        // console.log(error);
         done(error);
       } else {
         expect(error).to.be.an('undefined');
         done();
       }
+    });
+
+    it("should pass with a crs link object", function (done) {
+      pointData.point.crs = {
+        type: "link",
+        properties: {
+          href: "http://example.com/crs/42",
+          type: "proj4"
+        }
+      };
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should pass with a crs object and funky coordinates", function (done) {
+      pointData.point.coordinates[0] = 519170358981.4272;
+      pointData.point.coordinates[1] = 862072816114.0736;
+      pointData.point.crs = {
+        type: "link",
+        properties: {
+          href: "http://example.com/crs/42",
+          type: "proj4"
+        }
+      };
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      if (error) {
+        done(error);
+      } else {
+        expect(error).to.be.an('undefined');
+        done();
+      }
+    });
+
+    it("should fail with a badly formed crs object", function (done) {
+      pointData.point.crs = {
+        type: "name",
+        properties: {
+          href: "http://example.com/crs/42",
+          type: "proj4"
+        }
+      };
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      done();
+    });
+
+    it("should fail with coordinates out of range", function (done) {
+      pointData.point.coordinates[0] = 12345349884848;
+      pointData.point.coordinates[1] = 945873487236745;
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      done();
     });
 
     it("should fail with a badly formed Point", function (done) {
@@ -183,10 +243,8 @@ describe("GeoJSON Schema", function () {
 
     it("should fail when LineString only has one LineString", function (done) {
       lineStringData.linestring.coordinates = lineStringData.linestring.coordinates.splice(0,1);
-      // console.log(lineStringData);
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      // console.log(error);
       expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
       done();
     });
