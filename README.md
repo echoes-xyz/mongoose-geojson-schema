@@ -1,9 +1,10 @@
 # mongoose-geojson-schema
 
 ## About
-Schema definitions for GeoJSON types for use with Mongoose JS.
 
-The [GeoJSON Schema](http://geojson.org/) specifies geospatial data types for use in various JSON-based projects. This package aims to make those data types available to those wanting to employ them in a [mongoose schema](http://mongoosejs.com), with validation following the strict guidelines available on the GeoJSON website. The following data types are available:
+Schema definitions for GeoJSON types for use with [Mongoose JS](http://mongoosejs.com/), a mongodb object model.
+
+The [GeoJSON Schema](http://geojson.org/) specifies geospatial data types for use in JSON-based projects. This package aims to make those data types available to those wanting to employ them in a [mongoose schema](http://mongoosejs.com), with validation following the strict guidelines available on the GeoJSON website. The following data types are available:
 * Point
 * MultiPoint
 * LineString
@@ -11,25 +12,25 @@ The [GeoJSON Schema](http://geojson.org/) specifies geospatial data types for us
 * Polygon
 * MultiPolygon
 
-and the following super types
+and the following super types:
 
 * Geometry
 * GeometryCollection
 * Feature
 * FeatureCollection
 
-## Usage
-v0.x
-``` javascript
-var GeoJSON = require('mongoose-geojson-schema');
-var mongoose = require('mongoose');
+### Coordinate Reference Systems
 
-var schema = new mongoose.Schema({
-	geoFeature:GeoJSON.Feature
-});
-```
-v1.x
-``` javascript
+Following the GeoJSON spec, we assume a default coordinate reference system
+(CRS) of the WGS84 datum. That is, coordinates are validated to represent
+longitude and latitude units of decimal degrees.
+
+If you wish to disable this validation, set the `crs` property to a `null` or alternate
+value [following the GeoJSON spec for Coordinate Reference Sytems](http://geojson.org/geojson-spec.html#coordinate-reference-system-objects)
+
+## Usage
+
+```javascript
 var GeoJSON = require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
 
@@ -70,16 +71,31 @@ var test = new GeoJSON({
 
 ```
 
+## Old Usage
+
+For v0.x
+
+```javascript
+var GeoJSON = require('mongoose-geojson-schema');
+var mongoose = require('mongoose');
+
+var schema = new mongoose.Schema({
+	geoFeature:GeoJSON.Feature
+});
+```
+
 ## Testing
-```
-grunt
-```
-or
+
 ```
 npm test
 ```
 
-## License
-Copyright (c) 2014, RideAmigos. (MIT License)
+## Contributors
 
-See LICENSE for more info.
+[Ben Dalton](https://github.com/bendalton), [Mark Stosberg](https://github.com/markstos), [Joshua Kopecek](https://github.com/joshkopecek)
+
+## License
+
+Copyright (c) 2014-2016, RideAmigos. (MIT License)
+
+See [LICENSE](./LICENSE) for more info.
