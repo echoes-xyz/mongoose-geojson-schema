@@ -86,7 +86,9 @@ Point.prototype.cast = function(point) {
   if (point.crs) {
     crs = point.crs;
     validateCrs(crs);
-  } else crs = undefined;
+  } else {
+    crs = undefined;
+  }
   validatePoint(point.coordinates);
   return point;
 };

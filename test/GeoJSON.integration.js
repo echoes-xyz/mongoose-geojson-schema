@@ -8,7 +8,6 @@ var chai = require('chai'),
   expect = chai.expect,
 	mongoose = require('bluebird').promisifyAll(require('mongoose')),
 	ObjectId = mongoose.Types.ObjectId,
-	GeoJSON = require('../GeoJSON'),
 	geoJSONSchema = require('./test.model');
 
 describe("GeoJSON Schema", function () {
@@ -42,19 +41,13 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid Point", function (done) {
+    it("should return a valid Point", function () {
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      if (error) {
-        // console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should pass with a crs name object", function (done) {
+    it("should pass with a crs name object", function () {
       pointData.point.crs = {
         type: "name",
         properties: {
@@ -63,15 +56,10 @@ describe("GeoJSON Schema", function () {
       };
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      if (error) {
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should pass with a crs link object", function (done) {
+    it("should pass with a crs link object", function () {
       pointData.point.crs = {
         type: "link",
         properties: {
@@ -81,15 +69,10 @@ describe("GeoJSON Schema", function () {
       };
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      if (error) {
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should pass with a crs object and funky coordinates", function (done) {
+    it("should pass with a crs object and funky coordinates", function () {
       pointData.point.coordinates[0] = 519170358981.4272;
       pointData.point.coordinates[1] = 862072816114.0736;
       pointData.point.crs = {
@@ -101,15 +84,10 @@ describe("GeoJSON Schema", function () {
       };
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      if (error) {
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed crs object", function (done) {
+    it("should fail with a badly formed crs object", function () {
       pointData.point.crs = {
         type: "name",
         properties: {
@@ -120,33 +98,29 @@ describe("GeoJSON Schema", function () {
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       expect(error.errors.point.message).to.contain('Cast to Point failed for value');
-      done();
     });
 
-    it("should fail with coordinates out of range", function (done) {
+    it("should fail with coordinates out of range", function () {
       pointData.point.coordinates[0] = 12345349884848;
       pointData.point.coordinates[1] = 945873487236745;
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       expect(error.errors.point.message).to.contain('Cast to Point failed for value');
-      done();
     });
 
-    it("should fail with a badly formed Point", function (done) {
+    it("should fail with a badly formed Point", function () {
       pointData.point.coordinates[2] = 12345349884848;
       pointData.point.coordinates[3] = 945873487236745;
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       expect(error.errors.point.message).to.contain('Cast to Point failed for value');
-      done();
     });
 
-    it("should fail when Point is not described as a Point", function (done) {
+    it("should fail when Point is not described as a Point", function () {
       pointData.point.type = "Square";
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
       expect(error.errors.point.message).to.contain('Cast to Point failed for value');
-      done();
     });
 
   });
@@ -166,32 +140,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid MultiPoint", function (done) {
+    it("should return a valid MultiPoint", function () {
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
-      if (error) {
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed MultiPoint", function (done) {
+    it("should fail with a badly formed MultiPoint", function () {
       multiPointData.multipoint.coordinates[0][2] = 12345349884848;
       multiPointData.multipoint.coordinates[0][3] = 945783478942;
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
       expect(error.errors.multipoint.message).to.contain('Cast to MultiPoint failed for value ');
-      done();
     });
 
-    it("should fail when MultiPoint is not described as a MultiPoint", function (done) {
+    it("should fail when MultiPoint is not described as a MultiPoint", function () {
       multiPointData.multipoint.type = "Square";
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
       expect(error.errors.multipoint.message).to.contain('Cast to MultiPoint failed for value ');
-      done();
     });
 
   });
@@ -212,41 +179,32 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid LineString", function (done) {
+    it("should return a valid LineString", function () {
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed LineString", function (done) {
+    it("should fail with a badly formed LineString", function () {
       lineStringData.linestring.coordinates[0][2] = 12345349884848;
       lineStringData.linestring.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
       expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
-      done();
     });
 
-    it("should fail when LineString is not described as a LineString", function (done) {
+    it("should fail when LineString is not described as a LineString", function () {
       lineStringData.linestring.type = "Square";
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
       expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
-      done();
     });
 
-    it("should fail when LineString only has one LineString", function (done) {
+    it("should fail when LineString only has one LineString", function () {
       lineStringData.linestring.coordinates = lineStringData.linestring.coordinates.splice(0,1);
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
       expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
-      done();
     });
 
   });
@@ -275,33 +233,24 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid MultiLineString", function (done) {
+    it("should return a valid MultiLineString", function () {
       var geoJSON = new GeoJSON(multiLineStringData);
-      var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(geoJSON.validateSync()).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed MultiLineString", function (done) {
+    it("should fail with a badly formed MultiLineString", function () {
       multiLineStringData.multilinestring.coordinates[0][0][2] = 12345349884848;
       multiLineStringData.multilinestring.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(multiLineStringData);
       var error = geoJSON.validateSync();
       expect(error.errors.multilinestring.message).to.contain('Cast to MultiLineString failed for value');
-      done();
     });
 
-    it("should fail when MultiLineString is not described as a MultiLineString", function (done) {
+    it("should fail when MultiLineString is not described as a MultiLineString", function () {
       multiLineStringData.multilinestring.type = "Square";
       var geoJSON = new GeoJSON(multiLineStringData);
       var error = geoJSON.validateSync();
       expect(error.errors.multilinestring.message).to.contain('Cast to MultiLineString failed for value');
-      done();
     });
 
   });
@@ -332,33 +281,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid Polygon", function (done) {
+    it("should return a valid Polygon", function () {
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed Polygon", function (done) {
+    it("should fail with a badly formed Polygon", function () {
       polygonData.polygon.coordinates[0][2] = 12345349884848;
       polygonData.polygon.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
       expect(error.errors.polygon.message).to.contain('Cast to Polygon failed for value');
-      done();
     });
 
-    it("should fail when Polygon is not described as a Polygon", function (done) {
+    it("should fail when Polygon is not described as a Polygon", function () {
       polygonData.polygon.type = "Square";
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
       expect(error.errors.polygon.message).to.contain('Cast to Polygon failed for value');
-      done();
     });
 
   });
@@ -404,33 +345,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid MultiPolygon", function (done) {
+    it("should return a valid MultiPolygon", function () {
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed MultiPolygon", function (done) {
+    it("should fail with a badly formed MultiPolygon", function () {
       multiPolygonData.multipolygon.coordinates[0][2] = 12345349884848;
       multiPolygonData.multipolygon.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
       expect(error.errors.multipolygon.message).to.contain('Cast to MultiPolygon failed for value');
-      done();
     });
 
-    it("should fail when MultiPolygon is not described as a MultiPolygon", function (done) {
+    it("should fail when MultiPolygon is not described as a MultiPolygon", function () {
       multiPolygonData.multipolygon.type = "Square";
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
       expect(error.errors.multipolygon.message).to.contain('Cast to MultiPolygon failed for value');
-      done();
     });
 
   });
@@ -451,19 +384,13 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid Geometry with LineString", function (done) {
+    it("should return a valid Geometry with LineString", function () {
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should return a valid Geometry with MultiPoint", function (done) {
+    it("should return a valid Geometry with MultiPoint", function () {
       geometryData.geometry = {
         type: "MultiLineString",
         coordinates: [
@@ -481,30 +408,22 @@ describe("GeoJSON Schema", function () {
       };
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed Geometry", function (done) {
+    it("should fail with a badly formed Geometry", function () {
       geometryData.geometry.coordinates[0][2] = 12345349884848;
       geometryData.geometry.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
       expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
-      done();
     });
 
-    it("should fail when a geometry is not described correctly", function (done) {
+    it("should fail when a geometry is not described correctly", function () {
       geometryData.geometry.type = "Square";
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
       expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
-      done();
     });
 
   });
@@ -605,33 +524,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid GeometryCollection", function (done) {
+    it("should return a valid GeometryCollection", function () {
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed GeometryCollection", function (done) {
+    it("should fail with a badly formed GeometryCollection", function () {
       geometryCollectionData.geometrycollection.geometries[0].coordinates[2] = 12345349884848;
       geometryCollectionData.geometrycollection.geometries[0].coordinates[3] = 9845674598;
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
       expect(error.errors.geometrycollection.message).to.contain('Cast to GeometryCollection failed for value');
-      done();
     });
 
-    it("should fail when a geometry is not described correctly", function (done) {
+    it("should fail when a geometry is not described correctly", function () {
       geometryCollectionData.geometrycollection.geometries[0].type = "Square";
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
       expect(error.errors.geometrycollection.message).to.contain('Cast to GeometryCollection failed for value');
-      done();
     });
 
   });
@@ -667,33 +578,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid Feature", function (done) {
+    it("should return a valid Feature", function () {
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed Feature", function (done) {
+    it("should fail with a badly formed Feature", function () {
       featureData.feature.geometry.coordinates[0][0][2] = 12345349884848;
       featureData.feature.geometry.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
       expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
-      done();
     });
 
-    it("should fail when a geometry is not described correctly", function (done) {
+    it("should fail when a geometry is not described correctly", function () {
       featureData.feature.geometry.type = "Square";
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
       expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
-      done();
     });
 
   });
@@ -734,33 +637,25 @@ describe("GeoJSON Schema", function () {
       };
     });
 
-    it("should return a valid FeatureCollection", function (done) {
+    it("should return a valid FeatureCollection", function () {
       var geoJSON = new GeoJSON(featureCollectionData);
       var error = geoJSON.validateSync();
-      if (error) {
-        console.log(error);
-        done(error);
-      } else {
-        expect(error).to.be.an('undefined');
-        done();
-      }
+      expect(error).to.be.an('undefined');
     });
 
-    it("should fail with a badly formed FeatureCollection", function (done) {
+    it("should fail with a badly formed FeatureCollection", function () {
       featureCollectionData.featurecollection.features[0].geometry.coordinates[0][0][2] = 12345349884848;
       featureCollectionData.featurecollection.features[0].geometry.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(featureCollectionData);
       var error = geoJSON.validateSync();
       expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
-      done();
     });
 
-    it("should fail when a geometry is not described correctly", function (done) {
+    it("should fail when a geometry is not described correctly", function () {
       featureCollectionData.featurecollection.features[0].geometry.type = "Square";
       var geoJSON = new GeoJSON(featureCollectionData);
       var error = geoJSON.validateSync();
       expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
-      done();
     });
 
   });
