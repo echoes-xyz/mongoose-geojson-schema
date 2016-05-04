@@ -1,25 +1,29 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "GeoJSON.js",
   "scripts": {
     "test": "grunt"
   },
   "keywords": [
+    "mongo",
     "mongoose",
     "mongoosejs",
     "schema",
     "geojson",
     "point",
     "geometry",
-    "feature"
+    "feature",
+    "polygon",
+    "linestring"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/rideamigoscorp/mongoose-geojson-schema.git"
   },
-  "author": "Ben Dalton (ben@rideamigos.com)",
+  "author": "Ben Dalton <ben@rideamigos.com>",
+  "contributors": ["Josh Kopeček <josh@echoes.xyz>"],
   "license": "MIT",
   "devDependencies": {
     "bluebird": "^3.3.5",
