@@ -97,7 +97,7 @@ describe("GeoJSON Schema", function () {
       };
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      expect(error.errors.point.reason.message).to.contain('Crs specified by name must have a name property');
     });
 
     it("should fail with coordinates out of range", function () {
@@ -105,7 +105,7 @@ describe("GeoJSON Schema", function () {
       pointData.point.coordinates[1] = 945873487236745;
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      expect(error.errors.point.reason.message).to.contain('should be within the boundaries of latitude');
     });
 
     it("should fail with a badly formed Point", function () {
@@ -113,14 +113,14 @@ describe("GeoJSON Schema", function () {
       pointData.point.coordinates[3] = 945873487236745;
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      expect(error.errors.point.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when Point is not described as a Point", function () {
       pointData.point.type = "Square";
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.message).to.contain('Cast to Point failed for value');
+      expect(error.errors.point.reason.message).to.contain('Point type must be Point');
     });
 
   });
@@ -151,14 +151,14 @@ describe("GeoJSON Schema", function () {
       multiPointData.multipoint.coordinates[0][3] = 945783478942;
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipoint.message).to.contain('Cast to MultiPoint failed for value ');
+      expect(error.errors.multipoint.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when MultiPoint is not described as a MultiPoint", function () {
       multiPointData.multipoint.type = "Square";
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipoint.message).to.contain('Cast to MultiPoint failed for value ');
+      expect(error.errors.multipoint.reason.message).to.contain('MultiPoint type must be MultiPoint');
     });
 
   });
@@ -190,21 +190,21 @@ describe("GeoJSON Schema", function () {
       lineStringData.linestring.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
+      expect(error.errors.linestring.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when LineString is not described as a LineString", function () {
       lineStringData.linestring.type = "Square";
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
+      expect(error.errors.linestring.reason.message).to.contain('LineString type must be LineString');
     });
 
     it("should fail when LineString only has one LineString", function () {
       lineStringData.linestring.coordinates = lineStringData.linestring.coordinates.splice(0,1);
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.linestring.message).to.contain('Cast to LineString failed for value');
+      expect(error.errors.linestring.reason.message).to.contain('LineString type must have at least two Points');
     });
 
   });
@@ -243,14 +243,14 @@ describe("GeoJSON Schema", function () {
       multiLineStringData.multilinestring.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(multiLineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multilinestring.message).to.contain('Cast to MultiLineString failed for value');
+      expect(error.errors.multilinestring.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when MultiLineString is not described as a MultiLineString", function () {
       multiLineStringData.multilinestring.type = "Square";
       var geoJSON = new GeoJSON(multiLineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multilinestring.message).to.contain('Cast to MultiLineString failed for value');
+      expect(error.errors.multilinestring.reason.message).to.contain('MultiLineString type must be MultiLineString');
     });
 
   });
@@ -292,14 +292,14 @@ describe("GeoJSON Schema", function () {
       polygonData.polygon.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.polygon.message).to.contain('Cast to Polygon failed for value');
+      expect(error.errors.polygon.reason.message).to.contain('Each Polygon LinearRing must have an identical first and last point');
     });
 
     it("should fail when Polygon is not described as a Polygon", function () {
       polygonData.polygon.type = "Square";
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.polygon.message).to.contain('Cast to Polygon failed for value');
+      expect(error.errors.polygon.reason.message).to.contain('Polygon type must be Polygon');
     });
 
   });
@@ -352,18 +352,18 @@ describe("GeoJSON Schema", function () {
     });
 
     it("should fail with a badly formed MultiPolygon", function () {
-      multiPolygonData.multipolygon.coordinates[0][2] = 12345349884848;
-      multiPolygonData.multipolygon.coordinates[0][3] = 9845674598;
+      multiPolygonData.multipolygon.coordinates[0][0][2] = 12345349884848;
+      multiPolygonData.multipolygon.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipolygon.message).to.contain('Cast to MultiPolygon failed for value');
+      expect(error.errors.multipolygon.reason.message).to.contain('Each Polygon LinearRing must have an identical first and last point');
     });
 
     it("should fail when MultiPolygon is not described as a MultiPolygon", function () {
       multiPolygonData.multipolygon.type = "Square";
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipolygon.message).to.contain('Cast to MultiPolygon failed for value');
+      expect(error.errors.multipolygon.reason.message).to.contain('MultiPolygon type must be MultiPolygon');
     });
 
   });
@@ -416,14 +416,14 @@ describe("GeoJSON Schema", function () {
       geometryData.geometry.coordinates[0][3] = 9845674598;
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
+      expect(error.errors.geometry.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when a geometry is not described correctly", function () {
       geometryData.geometry.type = "Square";
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.message).to.contain('Cast to Geometry failed for value');
+      expect(error.errors.geometry.reason.message).to.contain('Geometry must have a valid type');
     });
 
   });
@@ -535,14 +535,14 @@ describe("GeoJSON Schema", function () {
       geometryCollectionData.geometrycollection.geometries[0].coordinates[3] = 9845674598;
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometrycollection.message).to.contain('Cast to GeometryCollection failed for value');
+      expect(error.errors.geometrycollection.reason.message).to.contain('must contain two or three coordinates');
     });
 
     it("should fail when a geometry is not described correctly", function () {
       geometryCollectionData.geometrycollection.geometries[0].type = "Square";
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometrycollection.message).to.contain('Cast to GeometryCollection failed for value');
+      expect(error.errors.geometrycollection.reason.message).to.contain('Geometry must have a valid type');
     });
 
   });
@@ -589,14 +589,14 @@ describe("GeoJSON Schema", function () {
       featureData.feature.geometry.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
-      expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
+      expect(error.errors.feature.reason.message).to.contain('Each Polygon LinearRing must have an identical first and last point');
     });
 
     it("should fail when a geometry is not described correctly", function () {
       featureData.feature.geometry.type = "Square";
       var geoJSON = new GeoJSON(featureData);
       var error = geoJSON.validateSync();
-      expect(error.errors.feature.message).to.contain('Cast to Feature failed for value');
+      expect(error.errors.feature.reason.message).to.contain('Geometry must have a valid type');
     });
 
   });
@@ -648,14 +648,14 @@ describe("GeoJSON Schema", function () {
       featureCollectionData.featurecollection.features[0].geometry.coordinates[0][0][3] = 9845674598;
       var geoJSON = new GeoJSON(featureCollectionData);
       var error = geoJSON.validateSync();
-      expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
+      expect(error.errors.featurecollection.reason.message).to.contain('Each Polygon LinearRing must have an identical first and last point');
     });
 
     it("should fail when a geometry is not described correctly", function () {
       featureCollectionData.featurecollection.features[0].geometry.type = "Square";
       var geoJSON = new GeoJSON(featureCollectionData);
       var error = geoJSON.validateSync();
-      expect(error.errors.featurecollection.message).to.contain('Cast to FeatureCollection failed for value');
+      expect(error.errors.featurecollection.reason.message).to.contain('Geometry must have a valid type');
     });
 
   });
