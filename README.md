@@ -28,7 +28,58 @@ longitude and latitude units of decimal degrees.
 If you wish to disable this validation, set the `crs` property to a `null` or alternate
 value [following the GeoJSON spec for Coordinate Reference Sytems](http://geojson.org/geojson-spec.html#coordinate-reference-system-objects)
 
-## Usage
+## Installation
+
+First install [node.js](http://nodejs.org/), [mongodb](https://www.mongodb.org/downloads) and [mongoose](https://www.npmjs.com/package/mongoose)
+
+```
+$ npm install mongoose-geojson-schema --save
+```
+
+## Usage v2.x
+
+```javascript
+var GeoJSON = require('mongoose-geojson-schema');
+var mongoose = require('mongoose');
+
+var schema = new mongoose.Schema({
+	point: mongoose.Schema.Types.GeoJSON,
+	multipoint: mongoose.Schema.Types.GeoJSON,
+	linestring: mongoose.Schema.Types.GeoJSON,
+	multilinestring: mongoose.Schema.Types.GeoJSON,
+	polygon: mongoose.Schema.Types.GeoJSON,
+	multipolygon: mongoose.Schema.Types.GeoJSON,
+	geometry: mongoose.Schema.Types.GeoJSON,
+	geometrycollection: mongoose.Schema.Types.GeoJSON,
+	feature: mongoose.Schema.Types.GeoJSON,
+	featurecollection: mongoose.Schema.Types.GeoJSON
+});
+
+var db = mongoose.createConnection('localhost', 'test');
+var model = db.model('GeoJSON', schema);
+
+var test = new GeoJSON({
+	point: {
+	  type: "Point",
+	  coordinates: [12.123456, 13.134578]
+	},
+	...
+	polygon: {
+		type: "Polygon",
+		coordinates: [
+			[
+				[12.123456, 13.1345678],
+				[179.999999, -1.345],
+				[12.0002, -45.4663],
+				[12.123456, 13.1345678]
+			],
+			...
+	}
+});
+
+```
+
+## Usage v1.x
 
 ```javascript
 var GeoJSON = require('mongoose-geojson-schema');
@@ -71,9 +122,7 @@ var test = new GeoJSON({
 
 ```
 
-## Old Usage
-
-For v0.x
+## Usage v0.x
 
 ```javascript
 var GeoJSON = require('mongoose-geojson-schema');

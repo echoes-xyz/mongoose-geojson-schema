@@ -9,7 +9,6 @@
 * Copyright RideAmigos (http://rideamigos.com)
 **/
 
-var GeoJSON = {};
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var crs = {};
@@ -39,13 +38,64 @@ function validateCrs(crs) {
 }
 
 /**
-* @SchemaType Point
+* @SchemaType GeoJSON
 *
 */
 
-function Point(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Point');
+function GeoJSON(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'GeoJSON');
 }
+
+GeoJSON.prototype = Object.create(mongoose.SchemaType.prototype);
+
+GeoJSON.prototype.cast = function(geojson) {
+  if (!geojson.type) {
+    throw new mongoose.Error('GeoJSON objects must have a type');
+  }
+  switch (geojson.type) {
+    case 'Point':
+      validatePointObject(geojson);
+      break;
+    case 'MultiPoint':
+      validateMultiPointObject(geojson);
+      break;
+    case 'LineString':
+      validateLineStringObject(geojson);
+      break;
+    case 'MultiLineString':
+      validateMultiLineStringObject(geojson);
+      break;
+    case 'Polygon':
+      validatePolygonObject(geojson);
+      break;
+    case 'MultiPolygon':
+      validateMultiPolygonObject(geojson);
+      break;
+    case 'Geometry':
+      validateGeometryObject(geojson);
+      break;
+    case 'GeometryCollection':
+      validateGeometryCollectionObject(geojson);
+      break;
+    case 'Feature':
+      validateFeatureObject(geojson);
+      break;
+    case 'FeatureCollection':
+      validateFeatureCollectionObject(geojson);
+      break;
+    default:
+      throw new mongoose.Error(geojson.type + ' is not a valid GeoJSON type');
+
+  }
+  return geojson;
+};
+
+Schema.Types.GeoJSON = GeoJSON;
+
+/**
+* @SchemaType Point
+*
+*/
 
 function validatePoint(coordinates) {
   // must be an array (object)
@@ -72,15 +122,9 @@ function validatePoint(coordinates) {
   }
 }
 
-Point.prototype = Object.create(mongoose.SchemaType.prototype);
-
-Point.prototype.cast = function(point) {
+function validatePointObject(point) {
   if (!point.type) {
     throw new mongoose.Error('Point', point.type, 'point.type');
-  }
-  // type must be Point
-  if (point.type !== 'Point') {
-    throw new mongoose.Error('Point type must be Point');
   }
   // check for crs
   if (point.crs) {
@@ -91,18 +135,12 @@ Point.prototype.cast = function(point) {
   }
   validatePoint(point.coordinates);
   return point;
-};
-
-mongoose.Schema.Types.Point = Point;
+}
 
 /**
 * @SchemaType MultiPoint
 *
 */
-
-function MultiPoint(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiPoint');
-}
 
 function validateMultiPoint(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -110,19 +148,10 @@ function validateMultiPoint(coordinates) {
   }
 }
 
-MultiPoint.prototype = Object.create(mongoose.SchemaType.prototype);
-
-MultiPoint.prototype.cast = function(multipoint) {
+function validateMultiPointObject(multipoint) {
   // must be an array (object)
   if (typeof multipoint.coordinates !== 'object') {
     throw new mongoose.Error('MultiPoint must be an array');
-  }
-  if (!multipoint.type) {
-    throw new mongoose.Error('MultiPoint must have a type');
-  }
-  // type must be MultiPoint
-  if (multipoint.type !== 'MultiPoint') {
-    throw new mongoose.Error('MultiPoint type must be MultiPoint');
   }
   // check for crs
   if (multipoint.crs) {
@@ -131,18 +160,12 @@ MultiPoint.prototype.cast = function(multipoint) {
   }
   validateMultiPoint(multipoint.coordinates);
   return multipoint;
-};
-
-mongoose.Schema.Types.MultiPoint = MultiPoint;
+}
 
 /**
 * @SchemaType LineString
 *
 */
-
-function LineString(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'LineString');
-}
 
 function validateLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -150,16 +173,7 @@ function validateLineString(coordinates) {
   }
 }
 
-LineString.prototype = Object.create(mongoose.SchemaType.prototype);
-
-LineString.prototype.cast = function(linestring) {
-  if (!linestring.type) {
-    throw new mongoose.Error('LineString must have a type');
-  }
-  // type must be LineString
-  if (linestring.type !== 'LineString') {
-    throw new mongoose.Error('LineString type must be LineString');
-  }
+function validateLineStringObject(linestring) {
   // must have at least two Points
   if (linestring.coordinates.length < 2) {
     throw new mongoose.Error('LineString type must have at least two Points');
@@ -171,18 +185,12 @@ LineString.prototype.cast = function(linestring) {
   }
   validateLineString(linestring.coordinates);
   return linestring;
-};
-
-mongoose.Schema.Types.LineString = LineString;
+}
 
 /**
 * @SchemaType MultiLineString
 *
 */
-
-function MultiLineString(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiLineString');
-}
 
 function validateMultiLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -190,34 +198,19 @@ function validateMultiLineString(coordinates) {
   }
 }
 
-MultiLineString.prototype = Object.create(mongoose.SchemaType.prototype);
-
-MultiLineString.prototype.cast = function(multilinestring) {
+function validateMultiLineStringObject(multilinestring) {
   // must be an array (object)
   if (typeof multilinestring.coordinates !== 'object') {
     throw new mongoose.Error('MultiLineString must be an array');
   }
-  if (!multilinestring.type) {
-    throw new mongoose.Error('MultiLineString', multilinestring.type + ' must have a type');
-  }
-  // type must be MultiLineString
-  if (multilinestring.type !== 'MultiLineString') {
-    throw new mongoose.Error('MultiLineString type must be MultiLineString');
-  }
   validateMultiLineString(multilinestring.coordinates);
   return multilinestring;
-};
-
-mongoose.Schema.Types.MultiLineString = MultiLineString;
+}
 
 /**
 * @SchemaType Polygon
 *
 */
-
-function Polygon(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Polygon');
-}
 
 function arraysEqual(arr1, arr2) {
   if(arr1.length !== arr2.length) return false;
@@ -243,16 +236,7 @@ function validatePolygon(coordinates) {
   }
 }
 
-Polygon.prototype = Object.create(mongoose.SchemaType.prototype);
-
-Polygon.prototype.cast = function(polygon) {
-  if (!polygon.type) {
-    throw new mongoose.Error('Polygon', polygon.type + ' must have a type');
-  }
-  // type must be Polygon
-  if (polygon.type !== 'Polygon') {
-    throw new mongoose.Error('Polygon type must be Polygon');
-  }
+function validatePolygonObject(polygon) {
   // check for crs
   if (polygon.crs) {
     crs = polygon.crs;
@@ -260,18 +244,12 @@ Polygon.prototype.cast = function(polygon) {
   }
   validatePolygon(polygon.coordinates);
   return polygon;
-};
-
-mongoose.Schema.Types.Polygon = Polygon;
+}
 
 /**
 * @SchemaType MultiPolygon
 *
 */
-
-function MultiPolygon(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiPolygon');
-}
 
 function validateMultiPolygon(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -279,19 +257,10 @@ function validateMultiPolygon(coordinates) {
   }
 }
 
-MultiPolygon.prototype = Object.create(mongoose.SchemaType.prototype);
-
-MultiPolygon.prototype.cast = function(multipolygon) {
+function validateMultiPolygonObject(multipolygon) {
   // must be an array (object)
   if (typeof multipolygon.coordinates !== 'object') {
     throw new mongoose.Error('MultiPolygon must be an array');
-  }
-  if (!multipolygon.type) {
-    throw new mongoose.Error('MultiPolygon must have a type');
-  }
-  // type must be Polygon
-  if (multipolygon.type !== 'MultiPolygon') {
-    throw new mongoose.Error('MultiPolygon type must be MultiPolygon');
   }
   // check for crs
   if (multipolygon.crs) {
@@ -300,18 +269,12 @@ MultiPolygon.prototype.cast = function(multipolygon) {
   }
   validateMultiPolygon(multipolygon.coordinates);
   return multipolygon;
-};
-
-mongoose.Schema.Types.MultiPolygon = MultiPolygon;
+}
 
 /**
 * @SchemaType Geometry
 *
 */
-
-function Geometry(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Geometry');
-}
 
 function validateGeometry(geometry) {
   switch (geometry.type) {
@@ -338,9 +301,7 @@ function validateGeometry(geometry) {
   }
 }
 
-Geometry.prototype = Object.create(mongoose.SchemaType.prototype);
-
-Geometry.prototype.cast = function(geometry) {
+function validateGeometryObject(geometry) {
   // console.log(geometry);
   // must be an array (object)
   if (!geometry.type) {
@@ -353,18 +314,12 @@ Geometry.prototype.cast = function(geometry) {
   }
   validateGeometry(geometry);
   return geometry;
-};
-
-mongoose.Schema.Types.Geometry = Geometry;
+}
 
 /**
 * @SchemaType GeometryCollection
 *
 */
-
-function GeometryCollection(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'GeometryCollection');
-}
 
 function validateGeometries(geometries) {
   for (var i = 0; i < geometries.length; i++) {
@@ -372,9 +327,7 @@ function validateGeometries(geometries) {
   }
 }
 
-GeometryCollection.prototype = Object.create(mongoose.SchemaType.prototype);
-
-GeometryCollection.prototype.cast = function(geometrycollection) {
+function validateGeometryCollectionObject(geometrycollection) {
   // must be an array (object)
   if (typeof geometrycollection.geometries !== 'object') {
     throw new mongoose.Error('GeometryCollection must be an array');
@@ -386,27 +339,14 @@ GeometryCollection.prototype.cast = function(geometrycollection) {
   }
   validateGeometries(geometrycollection.geometries);
   return geometrycollection;
-};
-
-mongoose.Schema.Types.GeometryCollection = GeometryCollection;
+}
 
 /**
 * @SchemaType Feature
 *
 */
 
-function Feature(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Feature');
-}
-
 function validateFeature(feature) {
-  if (!feature.type) {
-    throw new mongoose.Error('Feature must have a type');
-  }
-  // type must be Feature
-  if (feature.type !== 'Feature') {
-    throw new mongoose.Error('Feature type must be Feature');
-  }
   if (!feature.geometry) {
     throw new mongoose.Error('Feature must have a geometry');
   }
@@ -418,23 +358,15 @@ function validateFeature(feature) {
   validateGeometry(feature.geometry);
 }
 
-Feature.prototype = Object.create(mongoose.SchemaType.prototype);
-
-Feature.prototype.cast = function(feature) {
+function validateFeatureObject(feature) {
   validateFeature(feature);
   return feature;
-};
-
-mongoose.Schema.Types.Feature = Feature;
+}
 
 /**
 * @SchemaType FeatureCollection
 *
 */
-
-function FeatureCollection(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'FeatureCollection');
-}
 
 function validateFeatureCollection(featurecollection) {
   for (var i = 0; i < featurecollection.features.length; i++) {
@@ -443,16 +375,7 @@ function validateFeatureCollection(featurecollection) {
   return featurecollection;
 }
 
-FeatureCollection.prototype = Object.create(mongoose.SchemaType.prototype);
-
-FeatureCollection.prototype.cast = function(featurecollection) {
-  if (!featurecollection.type) {
-    throw new mongoose.Error('FeatureCollection must have a type');
-  }
-  // type must be Polygon
-  if (featurecollection.type !== 'FeatureCollection') {
-    throw new mongoose.Error('FeatureCollection type must be FeatureCollection');
-  }
+function validateFeatureCollectionObject(featurecollection) {
   if (!featurecollection.features) {
     throw new mongoose.Error('FeatureCollections must have a features object');
   }
@@ -463,6 +386,4 @@ FeatureCollection.prototype.cast = function(featurecollection) {
   }
   validateFeatureCollection(featurecollection);
   return featurecollection;
-};
-
-mongoose.Schema.Types.FeatureCollection = FeatureCollection;
+}

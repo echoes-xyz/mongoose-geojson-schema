@@ -120,7 +120,7 @@ describe("GeoJSON Schema", function () {
       pointData.point.type = "Square";
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.reason.message).to.contain('Point type must be Point');
+      expect(error.errors.point.reason.message).to.contain('Square is not a valid GeoJSON typ');
     });
 
   });
@@ -158,7 +158,7 @@ describe("GeoJSON Schema", function () {
       multiPointData.multipoint.type = "Square";
       var geoJSON = new GeoJSON(multiPointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipoint.reason.message).to.contain('MultiPoint type must be MultiPoint');
+      expect(error.errors.multipoint.reason.message).to.contain('Square is not a valid GeoJSON typ');
     });
 
   });
@@ -197,7 +197,7 @@ describe("GeoJSON Schema", function () {
       lineStringData.linestring.type = "Square";
       var geoJSON = new GeoJSON(lineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.linestring.reason.message).to.contain('LineString type must be LineString');
+      expect(error.errors.linestring.reason.message).to.contain('Square is not a valid GeoJSON typ');
     });
 
     it("should fail when LineString only has one LineString", function () {
@@ -250,7 +250,7 @@ describe("GeoJSON Schema", function () {
       multiLineStringData.multilinestring.type = "Square";
       var geoJSON = new GeoJSON(multiLineStringData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multilinestring.reason.message).to.contain('MultiLineString type must be MultiLineString');
+      expect(error.errors.multilinestring.reason.message).to.contain('Square is not a valid GeoJSON type');
     });
 
   });
@@ -299,7 +299,7 @@ describe("GeoJSON Schema", function () {
       polygonData.polygon.type = "Square";
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.polygon.reason.message).to.contain('Polygon type must be Polygon');
+      expect(error.errors.polygon.reason.message).to.contain('Square is not a valid GeoJSON type');
     });
 
   });
@@ -363,7 +363,7 @@ describe("GeoJSON Schema", function () {
       multiPolygonData.multipolygon.type = "Square";
       var geoJSON = new GeoJSON(multiPolygonData);
       var error = geoJSON.validateSync();
-      expect(error.errors.multipolygon.reason.message).to.contain('MultiPolygon type must be MultiPolygon');
+      expect(error.errors.multipolygon.reason.message).to.contain('Square is not a valid GeoJSON type');
     });
 
   });
@@ -423,7 +423,7 @@ describe("GeoJSON Schema", function () {
       geometryData.geometry.type = "Square";
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.reason.message).to.contain('Geometry must have a valid type');
+      expect(error.errors.geometry.reason.message).to.contain('Square is not a valid GeoJSON type');
     });
 
   });
@@ -434,6 +434,7 @@ describe("GeoJSON Schema", function () {
       geometryCollectionData = {
         title: "A test object",
         geometrycollection: {
+          type: "GeometryCollection",
           geometries: [
             {
               type: "Point",
@@ -527,6 +528,7 @@ describe("GeoJSON Schema", function () {
     it("should return a valid GeometryCollection", function () {
       var geoJSON = new GeoJSON(geometryCollectionData);
       var error = geoJSON.validateSync();
+      if (error) console.log(error);
       expect(error).to.be.an('undefined');
     });
 
