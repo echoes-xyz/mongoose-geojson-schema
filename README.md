@@ -43,22 +43,27 @@ var GeoJSON = require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
-	point: mongoose.Schema.Types.GeoJSON,
-	multipoint: mongoose.Schema.Types.GeoJSON,
-	linestring: mongoose.Schema.Types.GeoJSON,
-	multilinestring: mongoose.Schema.Types.GeoJSON,
-	polygon: mongoose.Schema.Types.GeoJSON,
-	multipolygon: mongoose.Schema.Types.GeoJSON,
-	geometry: mongoose.Schema.Types.GeoJSON,
-	geometrycollection: mongoose.Schema.Types.GeoJSON,
-	feature: mongoose.Schema.Types.GeoJSON,
-	featurecollection: mongoose.Schema.Types.GeoJSON
+	any: mongoose.Schema.Types.GeoJSON,
+	point: mongoose.Schema.Types.Point,
+  multipoint: mongoose.Schema.Types.MultiPoint,
+  linestring: mongoose.Schema.Types.LineString,
+  multilinestring: mongoose.Schema.Types.MultiLineString,
+  polygon: mongoose.Schema.Types.Polygon,
+  multipolygon: mongoose.Schema.Types.MultiPolygon,
+  geometry: mongoose.Schema.Types.Geometry,
+  geometrycollection: mongoose.Schema.Types.GeometryCollection,
+  feature: mongoose.Schema.Types.Feature,
+  featurecollection: mongoose.Schema.Types.FeatureCollection
 });
 
 var db = mongoose.createConnection('localhost', 'test');
 var model = db.model('GeoJSON', schema);
 
 var test = new GeoJSON({
+	any: {
+		type: "Point",
+		point: [-113.806458, 44.847784]
+	},
 	point: {
 	  type: "Point",
 	  coordinates: [12.123456, 13.134578]

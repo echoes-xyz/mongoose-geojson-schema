@@ -423,7 +423,7 @@ describe("GeoJSON Schema", function () {
       geometryData.geometry.type = "Square";
       var geoJSON = new GeoJSON(geometryData);
       var error = geoJSON.validateSync();
-      expect(error.errors.geometry.reason.message).to.contain('Square is not a valid GeoJSON type');
+      expect(error.errors.geometry.reason.message).to.contain('Geometry must have a valid type');
     });
 
   });

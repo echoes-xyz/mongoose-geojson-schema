@@ -92,10 +92,15 @@ GeoJSON.prototype.cast = function(geojson) {
 
 Schema.Types.GeoJSON = GeoJSON;
 
+
 /**
 * @SchemaType Point
 *
 */
+
+function Point(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Point');
+}
 
 function validatePoint(coordinates) {
   // must be an array (object)
@@ -122,9 +127,15 @@ function validatePoint(coordinates) {
   }
 }
 
-function validatePointObject(point) {
+Point.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Point.prototype.cast = function(point) {
   if (!point.type) {
     throw new mongoose.Error('Point', point.type, 'point.type');
+  }
+  // type must be Point
+  if (point.type !== 'Point') {
+    throw new mongoose.Error(point.type + ' is not a valid GeoJSON type');
   }
   // check for crs
   if (point.crs) {
@@ -135,12 +146,18 @@ function validatePointObject(point) {
   }
   validatePoint(point.coordinates);
   return point;
-}
+};
+
+mongoose.Schema.Types.Point = Point;
 
 /**
 * @SchemaType MultiPoint
 *
 */
+
+function MultiPoint(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'MultiPoint');
+}
 
 function validateMultiPoint(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -148,10 +165,19 @@ function validateMultiPoint(coordinates) {
   }
 }
 
-function validateMultiPointObject(multipoint) {
+MultiPoint.prototype = Object.create(mongoose.SchemaType.prototype);
+
+MultiPoint.prototype.cast = function(multipoint) {
   // must be an array (object)
   if (typeof multipoint.coordinates !== 'object') {
     throw new mongoose.Error('MultiPoint must be an array');
+  }
+  if (!multipoint.type) {
+    throw new mongoose.Error('MultiPoint must have a type');
+  }
+  // type must be MultiPoint
+  if (multipoint.type !== 'MultiPoint') {
+    throw new mongoose.Error(multipoint.type + ' is not a valid GeoJSON type');
   }
   // check for crs
   if (multipoint.crs) {
@@ -160,12 +186,18 @@ function validateMultiPointObject(multipoint) {
   }
   validateMultiPoint(multipoint.coordinates);
   return multipoint;
-}
+};
+
+mongoose.Schema.Types.MultiPoint = MultiPoint;
 
 /**
 * @SchemaType LineString
 *
 */
+
+function LineString(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'LineString');
+}
 
 function validateLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -173,7 +205,16 @@ function validateLineString(coordinates) {
   }
 }
 
-function validateLineStringObject(linestring) {
+LineString.prototype = Object.create(mongoose.SchemaType.prototype);
+
+LineString.prototype.cast = function(linestring) {
+  if (!linestring.type) {
+    throw new mongoose.Error('LineString must have a type');
+  }
+  // type must be LineString
+  if (linestring.type !== 'LineString') {
+    throw new mongoose.Error(linestring.type + ' is not a valid GeoJSON type');
+  }
   // must have at least two Points
   if (linestring.coordinates.length < 2) {
     throw new mongoose.Error('LineString type must have at least two Points');
@@ -185,12 +226,18 @@ function validateLineStringObject(linestring) {
   }
   validateLineString(linestring.coordinates);
   return linestring;
-}
+};
+
+mongoose.Schema.Types.LineString = LineString;
 
 /**
 * @SchemaType MultiLineString
 *
 */
+
+function MultiLineString(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'MultiLineString');
+}
 
 function validateMultiLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -198,19 +245,34 @@ function validateMultiLineString(coordinates) {
   }
 }
 
-function validateMultiLineStringObject(multilinestring) {
+MultiLineString.prototype = Object.create(mongoose.SchemaType.prototype);
+
+MultiLineString.prototype.cast = function(multilinestring) {
   // must be an array (object)
   if (typeof multilinestring.coordinates !== 'object') {
     throw new mongoose.Error('MultiLineString must be an array');
   }
+  if (!multilinestring.type) {
+    throw new mongoose.Error('MultiLineString', multilinestring.type + ' must have a type');
+  }
+  // type must be MultiLineString
+  if (multilinestring.type !== 'MultiLineString') {
+    throw new mongoose.Error(multilinestring.type + ' is not a valid GeoJSON type');
+  }
   validateMultiLineString(multilinestring.coordinates);
   return multilinestring;
-}
+};
+
+mongoose.Schema.Types.MultiLineString = MultiLineString;
 
 /**
 * @SchemaType Polygon
 *
 */
+
+function Polygon(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Polygon');
+}
 
 function arraysEqual(arr1, arr2) {
   if(arr1.length !== arr2.length) return false;
@@ -236,7 +298,16 @@ function validatePolygon(coordinates) {
   }
 }
 
-function validatePolygonObject(polygon) {
+Polygon.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Polygon.prototype.cast = function(polygon) {
+  if (!polygon.type) {
+    throw new mongoose.Error('Polygon', polygon.type + ' must have a type');
+  }
+  // type must be Polygon
+  if (polygon.type !== 'Polygon') {
+    throw new mongoose.Error(polygon.type + ' is not a valid GeoJSON type');
+  }
   // check for crs
   if (polygon.crs) {
     crs = polygon.crs;
@@ -244,12 +315,18 @@ function validatePolygonObject(polygon) {
   }
   validatePolygon(polygon.coordinates);
   return polygon;
-}
+};
+
+mongoose.Schema.Types.Polygon = Polygon;
 
 /**
 * @SchemaType MultiPolygon
 *
 */
+
+function MultiPolygon(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'MultiPolygon');
+}
 
 function validateMultiPolygon(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -257,10 +334,19 @@ function validateMultiPolygon(coordinates) {
   }
 }
 
-function validateMultiPolygonObject(multipolygon) {
+MultiPolygon.prototype = Object.create(mongoose.SchemaType.prototype);
+
+MultiPolygon.prototype.cast = function(multipolygon) {
   // must be an array (object)
   if (typeof multipolygon.coordinates !== 'object') {
     throw new mongoose.Error('MultiPolygon must be an array');
+  }
+  if (!multipolygon.type) {
+    throw new mongoose.Error('MultiPolygon must have a type');
+  }
+  // type must be Polygon
+  if (multipolygon.type !== 'MultiPolygon') {
+    throw new mongoose.Error(multipolygon.type + ' is not a valid GeoJSON type');
   }
   // check for crs
   if (multipolygon.crs) {
@@ -269,12 +355,18 @@ function validateMultiPolygonObject(multipolygon) {
   }
   validateMultiPolygon(multipolygon.coordinates);
   return multipolygon;
-}
+};
+
+mongoose.Schema.Types.MultiPolygon = MultiPolygon;
 
 /**
 * @SchemaType Geometry
 *
 */
+
+function Geometry(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Geometry');
+}
 
 function validateGeometry(geometry) {
   switch (geometry.type) {
@@ -301,7 +393,9 @@ function validateGeometry(geometry) {
   }
 }
 
-function validateGeometryObject(geometry) {
+Geometry.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Geometry.prototype.cast = function(geometry) {
   // console.log(geometry);
   // must be an array (object)
   if (!geometry.type) {
@@ -314,12 +408,18 @@ function validateGeometryObject(geometry) {
   }
   validateGeometry(geometry);
   return geometry;
-}
+};
+
+mongoose.Schema.Types.Geometry = Geometry;
 
 /**
 * @SchemaType GeometryCollection
 *
 */
+
+function GeometryCollection(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'GeometryCollection');
+}
 
 function validateGeometries(geometries) {
   for (var i = 0; i < geometries.length; i++) {
@@ -327,7 +427,9 @@ function validateGeometries(geometries) {
   }
 }
 
-function validateGeometryCollectionObject(geometrycollection) {
+GeometryCollection.prototype = Object.create(mongoose.SchemaType.prototype);
+
+GeometryCollection.prototype.cast = function(geometrycollection) {
   // must be an array (object)
   if (typeof geometrycollection.geometries !== 'object') {
     throw new mongoose.Error('GeometryCollection must be an array');
@@ -339,14 +441,27 @@ function validateGeometryCollectionObject(geometrycollection) {
   }
   validateGeometries(geometrycollection.geometries);
   return geometrycollection;
-}
+};
+
+mongoose.Schema.Types.GeometryCollection = GeometryCollection;
 
 /**
 * @SchemaType Feature
 *
 */
 
+function Feature(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'Feature');
+}
+
 function validateFeature(feature) {
+  if (!feature.type) {
+    throw new mongoose.Error('Feature must have a type');
+  }
+  // type must be Feature
+  if (feature.type !== 'Feature') {
+    throw new mongoose.Error(feature.type + ' is not a valid GeoJSON type');
+  }
   if (!feature.geometry) {
     throw new mongoose.Error('Feature must have a geometry');
   }
@@ -358,15 +473,23 @@ function validateFeature(feature) {
   validateGeometry(feature.geometry);
 }
 
-function validateFeatureObject(feature) {
+Feature.prototype = Object.create(mongoose.SchemaType.prototype);
+
+Feature.prototype.cast = function(feature) {
   validateFeature(feature);
   return feature;
-}
+};
+
+mongoose.Schema.Types.Feature = Feature;
 
 /**
 * @SchemaType FeatureCollection
 *
 */
+
+function FeatureCollection(key, options) {
+  mongoose.SchemaType.call(this, key, options, 'FeatureCollection');
+}
 
 function validateFeatureCollection(featurecollection) {
   for (var i = 0; i < featurecollection.features.length; i++) {
@@ -375,7 +498,16 @@ function validateFeatureCollection(featurecollection) {
   return featurecollection;
 }
 
-function validateFeatureCollectionObject(featurecollection) {
+FeatureCollection.prototype = Object.create(mongoose.SchemaType.prototype);
+
+FeatureCollection.prototype.cast = function(featurecollection) {
+  if (!featurecollection.type) {
+    throw new mongoose.Error('FeatureCollection must have a type');
+  }
+  // type must be Polygon
+  if (featurecollection.type !== 'FeatureCollection') {
+    throw new mongoose.Error(featurecollection.type + ' is not a valid GeoJSON type');
+  }
   if (!featurecollection.features) {
     throw new mongoose.Error('FeatureCollections must have a features object');
   }
@@ -386,4 +518,6 @@ function validateFeatureCollectionObject(featurecollection) {
   }
   validateFeatureCollection(featurecollection);
   return featurecollection;
-}
+};
+
+mongoose.Schema.Types.FeatureCollection = FeatureCollection;
