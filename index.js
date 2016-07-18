@@ -111,7 +111,7 @@ function validatePoint(coordinates) {
   if (coordinates.length < 2 || coordinates.length > 3) {
     throw new mongoose.Error('Point' + coordinates + ' must contain two or three coordinates');
   }
-  // longitude must be within bounds
+  // must have two numbers
   if (typeof coordinates[0] !== 'number' || typeof coordinates[1] !== 'number') {
     throw new mongoose.Error('Point must have two numbers');
   }
