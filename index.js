@@ -118,7 +118,7 @@ function validatePoint(coordinates) {
   if (!crs) {
     // longitude must be within bounds
     if (coordinates[0] > 180 || coordinates[0] < -180) {
-      throw new mongoose.Error('Point' + coordinates[0] + ' should be within the boundaries of latitude');
+      throw new mongoose.Error('Point' + coordinates[0] + ' should be within the boundaries of longitude');
     }
     // latitude must be within bounds
     if (coordinates[1] > 90 || coordinates[1] < -90) {
