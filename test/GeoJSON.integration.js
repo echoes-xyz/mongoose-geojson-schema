@@ -105,7 +105,7 @@ describe("GeoJSON Schema", function () {
       pointData.point.coordinates[1] = 945873487236745;
       var geoJSON = new GeoJSON(pointData);
       var error = geoJSON.validateSync();
-      expect(error.errors.point.reason.message).to.contain('should be within the boundaries of latitude');
+      expect(error.errors.point.reason.message).to.contain('should be within the boundaries of longitude');
     });
 
     it("should fail with a badly formed Point", function () {
