@@ -52,42 +52,13 @@ GeoJSON.prototype.cast = function(geojson) {
   if (!geojson.type) {
     throw new mongoose.Error('GeoJSON objects must have a type');
   }
-  switch (geojson.type) {
-    case 'Point':
-      validatePointObject(geojson);
-      break;
-    case 'MultiPoint':
-      validateMultiPointObject(geojson);
-      break;
-    case 'LineString':
-      validateLineStringObject(geojson);
-      break;
-    case 'MultiLineString':
-      validateMultiLineStringObject(geojson);
-      break;
-    case 'Polygon':
-      validatePolygonObject(geojson);
-      break;
-    case 'MultiPolygon':
-      validateMultiPolygonObject(geojson);
-      break;
-    case 'Geometry':
-      validateGeometryObject(geojson);
-      break;
-    case 'GeometryCollection':
-      validateGeometryCollectionObject(geojson);
-      break;
-    case 'Feature':
-      validateFeatureObject(geojson);
-      break;
-    case 'FeatureCollection':
-      validateFeatureCollectionObject(geojson);
-      break;
-    default:
-      throw new mongoose.Error(geojson.type + ' is not a valid GeoJSON type');
 
+  var TypeClass = mongoose.Schema.Types[geojson.type];
+  if (!TypeClass) {
+    throw new mongoose.Error(geojson.type + ' is not a valid GeoJSON type');
   }
-  return geojson;
+
+  return TypeClass.prototype.cast.apply(this, arguments);
 };
 
 Schema.Types.GeoJSON = GeoJSON;
