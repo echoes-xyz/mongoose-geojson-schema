@@ -46,6 +46,8 @@ function GeoJSON(key, options) {
   mongoose.SchemaType.call(this, key, options, 'GeoJSON');
 }
 
+GeoJSON.schemaName = 'GeoJSON';
+
 GeoJSON.prototype = Object.create(mongoose.SchemaType.prototype);
 
 GeoJSON.prototype.cast = function(geojson) {
@@ -72,6 +74,8 @@ Schema.Types.GeoJSON = GeoJSON;
 function Point(key, options) {
   mongoose.SchemaType.call(this, key, options, 'Point');
 }
+
+Point.schemaName = 'Point';
 
 function validatePoint(coordinates) {
   // must be an array (object)
@@ -130,6 +134,8 @@ function MultiPoint(key, options) {
   mongoose.SchemaType.call(this, key, options, 'MultiPoint');
 }
 
+MultiPoint.schemaName = 'MultiPoint';
+
 function validateMultiPoint(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
     validatePoint(coordinates[i]);
@@ -169,6 +175,8 @@ mongoose.Schema.Types.MultiPoint = MultiPoint;
 function LineString(key, options) {
   mongoose.SchemaType.call(this, key, options, 'LineString');
 }
+
+LineString.schemaName = 'LineString';
 
 function validateLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -210,6 +218,8 @@ function MultiLineString(key, options) {
   mongoose.SchemaType.call(this, key, options, 'MultiLineString');
 }
 
+MultiLineString.schemaName = 'MultiLineString';
+
 function validateMultiLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
     validateLineString(coordinates[i]);
@@ -244,6 +254,8 @@ mongoose.Schema.Types.MultiLineString = MultiLineString;
 function Polygon(key, options) {
   mongoose.SchemaType.call(this, key, options, 'Polygon');
 }
+
+Polygon.schemaName = 'Polygon';
 
 function arraysEqual(arr1, arr2) {
   if(arr1.length !== arr2.length) return false;
@@ -299,6 +311,8 @@ function MultiPolygon(key, options) {
   mongoose.SchemaType.call(this, key, options, 'MultiPolygon');
 }
 
+MultiPolygon.schemaName = 'MultiPolygon';
+
 function validateMultiPolygon(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
     validatePolygon(coordinates[i]);
@@ -338,6 +352,8 @@ mongoose.Schema.Types.MultiPolygon = MultiPolygon;
 function Geometry(key, options) {
   mongoose.SchemaType.call(this, key, options, 'Geometry');
 }
+
+Geometry.schemaName = 'Geometry';
 
 function validateGeometry(geometry) {
   switch (geometry.type) {
@@ -392,6 +408,8 @@ function GeometryCollection(key, options) {
   mongoose.SchemaType.call(this, key, options, 'GeometryCollection');
 }
 
+GeometryCollection.schemaName = 'GeometryCollection';
+
 function validateGeometries(geometries) {
   for (var i = 0; i < geometries.length; i++) {
     validateGeometry(geometries[i]);
@@ -424,6 +442,8 @@ mongoose.Schema.Types.GeometryCollection = GeometryCollection;
 function Feature(key, options) {
   mongoose.SchemaType.call(this, key, options, 'Feature');
 }
+
+Feature.schemaName = 'Feature';
 
 function validateFeature(feature) {
   if (!feature.type) {
@@ -461,6 +481,8 @@ mongoose.Schema.Types.Feature = Feature;
 function FeatureCollection(key, options) {
   mongoose.SchemaType.call(this, key, options, 'FeatureCollection');
 }
+
+FeatureCollection.schemaName = 'FeatureCollection';
 
 function validateFeatureCollection(featurecollection) {
   for (var i = 0; i < featurecollection.features.length; i++) {
