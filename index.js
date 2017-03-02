@@ -11,6 +11,7 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Types = mongoose.Types;
 var crs = {};
 
 function validateCrs(crs) {
@@ -49,6 +50,7 @@ function GeoJSON(key, options) {
 GeoJSON.schemaName = 'GeoJSON';
 
 GeoJSON.prototype = Object.create(mongoose.SchemaType.prototype);
+GeoJSON.prototype.constructor = GeoJSON;
 
 GeoJSON.prototype.cast = function(geojson) {
   if (!geojson.type) {
@@ -64,6 +66,7 @@ GeoJSON.prototype.cast = function(geojson) {
 };
 
 Schema.Types.GeoJSON = GeoJSON;
+Types.GeoJSON = GeoJSON;
 
 
 /**
@@ -103,6 +106,7 @@ function validatePoint(coordinates) {
 }
 
 Point.prototype = Object.create(mongoose.SchemaType.prototype);
+Point.prototype.constructor = Point;
 
 Point.prototype.cast = function(point) {
   if (!point.type) {
@@ -123,7 +127,8 @@ Point.prototype.cast = function(point) {
   return point;
 };
 
-mongoose.Schema.Types.Point = Point;
+Schema.Types.Point = Point;
+Types.Point = Point;
 
 /**
 * @SchemaType MultiPoint
@@ -143,6 +148,7 @@ function validateMultiPoint(coordinates) {
 }
 
 MultiPoint.prototype = Object.create(mongoose.SchemaType.prototype);
+MultiPoint.prototype.constructor = MultiPoint;
 
 MultiPoint.prototype.cast = function(multipoint) {
   // must be an array (object)
@@ -165,7 +171,8 @@ MultiPoint.prototype.cast = function(multipoint) {
   return multipoint;
 };
 
-mongoose.Schema.Types.MultiPoint = MultiPoint;
+Schema.Types.MultiPoint = MultiPoint;
+Types.MultiPoint = MultiPoint;
 
 /**
 * @SchemaType LineString
@@ -185,6 +192,7 @@ function validateLineString(coordinates) {
 }
 
 LineString.prototype = Object.create(mongoose.SchemaType.prototype);
+LineString.prototype.constructor = LineString;
 
 LineString.prototype.cast = function(linestring) {
   if (!linestring.type) {
@@ -207,7 +215,8 @@ LineString.prototype.cast = function(linestring) {
   return linestring;
 };
 
-mongoose.Schema.Types.LineString = LineString;
+Schema.Types.LineString = LineString;
+Types.LineString = LineString;
 
 /**
 * @SchemaType MultiLineString
@@ -227,6 +236,7 @@ function validateMultiLineString(coordinates) {
 }
 
 MultiLineString.prototype = Object.create(mongoose.SchemaType.prototype);
+MultiLineString.prototype.constructor = MultiLineString;
 
 MultiLineString.prototype.cast = function(multilinestring) {
   // must be an array (object)
@@ -244,7 +254,9 @@ MultiLineString.prototype.cast = function(multilinestring) {
   return multilinestring;
 };
 
-mongoose.Schema.Types.MultiLineString = MultiLineString;
+Schema.Types.MultiLineString = MultiLineString;
+Types.MultiLineString = MultiLineString;
+
 
 /**
 * @SchemaType Polygon
@@ -282,6 +294,7 @@ function validatePolygon(coordinates) {
 }
 
 Polygon.prototype = Object.create(mongoose.SchemaType.prototype);
+Polygon.prototype.constructor = Polygon;
 
 Polygon.prototype.cast = function(polygon) {
   if (!polygon.type) {
@@ -300,7 +313,8 @@ Polygon.prototype.cast = function(polygon) {
   return polygon;
 };
 
-mongoose.Schema.Types.Polygon = Polygon;
+Schema.Types.Polygon = Polygon;
+Types.Polygon = Polygon;
 
 /**
 * @SchemaType MultiPolygon
@@ -320,6 +334,7 @@ function validateMultiPolygon(coordinates) {
 }
 
 MultiPolygon.prototype = Object.create(mongoose.SchemaType.prototype);
+MultiPolygon.prototype.constructor = MultiPolygon;
 
 MultiPolygon.prototype.cast = function(multipolygon) {
   // must be an array (object)
@@ -342,7 +357,8 @@ MultiPolygon.prototype.cast = function(multipolygon) {
   return multipolygon;
 };
 
-mongoose.Schema.Types.MultiPolygon = MultiPolygon;
+Schema.Types.MultiPolygon = MultiPolygon;
+Types.MultiPolygon = MultiPolygon;
 
 /**
 * @SchemaType Geometry
@@ -381,6 +397,7 @@ function validateGeometry(geometry) {
 }
 
 Geometry.prototype = Object.create(mongoose.SchemaType.prototype);
+Geometry.prototype.constructor = Geometry;
 
 Geometry.prototype.cast = function(geometry) {
   // console.log(geometry);
@@ -397,7 +414,8 @@ Geometry.prototype.cast = function(geometry) {
   return geometry;
 };
 
-mongoose.Schema.Types.Geometry = Geometry;
+Schema.Types.Geometry = Geometry;
+Types.Geometry = Geometry;
 
 /**
 * @SchemaType GeometryCollection
@@ -417,6 +435,7 @@ function validateGeometries(geometries) {
 }
 
 GeometryCollection.prototype = Object.create(mongoose.SchemaType.prototype);
+GeometryCollection.prototype.constructor = GeometryCollection;
 
 GeometryCollection.prototype.cast = function(geometrycollection) {
   // must be an array (object)
@@ -432,7 +451,8 @@ GeometryCollection.prototype.cast = function(geometrycollection) {
   return geometrycollection;
 };
 
-mongoose.Schema.Types.GeometryCollection = GeometryCollection;
+Schema.Types.GeometryCollection = GeometryCollection;
+Types.GeometryCollection = GeometryCollection;
 
 /**
 * @SchemaType Feature
@@ -465,13 +485,15 @@ function validateFeature(feature) {
 }
 
 Feature.prototype = Object.create(mongoose.SchemaType.prototype);
+Feature.prototype.constructor = Feature;
 
 Feature.prototype.cast = function(feature) {
   validateFeature(feature);
   return feature;
 };
 
-mongoose.Schema.Types.Feature = Feature;
+Schema.Types.Feature = Feature;
+Types.Feature = Feature;
 
 /**
 * @SchemaType FeatureCollection
@@ -492,6 +514,7 @@ function validateFeatureCollection(featurecollection) {
 }
 
 FeatureCollection.prototype = Object.create(mongoose.SchemaType.prototype);
+FeatureCollection.prototype.constructor = FeatureCollection;
 
 FeatureCollection.prototype.cast = function(featurecollection) {
   if (!featurecollection.type) {
@@ -513,4 +536,5 @@ FeatureCollection.prototype.cast = function(featurecollection) {
   return featurecollection;
 };
 
-mongoose.Schema.Types.FeatureCollection = FeatureCollection;
+Schema.Types.FeatureCollection = FeatureCollection;
+Types.FeatureCollection = FeatureCollection;
