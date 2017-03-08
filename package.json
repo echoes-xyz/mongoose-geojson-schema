@@ -1,6 +1,6 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,9 @@
     "url": "https://github.com/rideamigoscorp/mongoose-geojson-schema.git"
   },
   "author": "Ben Dalton <ben@rideamigos.com>",
-  "contributors": ["Josh Kopeček <josh@echoes.xyz>"],
+  "contributors": [
+    "Josh Kopeček <josh@echoes.xyz>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "bluebird": "^3.3.5",
