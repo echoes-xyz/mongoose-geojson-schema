@@ -62,7 +62,7 @@ var model = db.model('GeoJSON', schema);
 var test = new GeoJSON({
 	any: {
 		type: "Point",
-		point: [-113.806458, 44.847784]
+		coordinates: [-113.806458, 44.847784]
 	},
 	point: {
 	  type: "Point",
