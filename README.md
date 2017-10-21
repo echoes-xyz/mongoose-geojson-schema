@@ -57,9 +57,9 @@ var schema = new mongoose.Schema({
 });
 
 var db = mongoose.createConnection('localhost', 'test');
-var model = db.model('GeoJSON', schema);
+var Location = db.model('GeoJSON', schema);
 
-var test = new GeoJSON({
+var test = new Location({
 	any: {
 		type: "Point",
 		coordinates: [-113.806458, 44.847784]
