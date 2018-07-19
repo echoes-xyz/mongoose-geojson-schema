@@ -11,7 +11,7 @@ gulp.task('jshint', () => {
 
 gulp.task('mocha', () => {
     return gulp.src('test/**/*.integration.js', {read: false})
-    .pipe(mocha({reporter: 'spec'}));
+    .pipe(mocha());
 })
 
 gulp.task('default', ['jshint', 'mocha']);

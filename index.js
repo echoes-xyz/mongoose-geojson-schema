@@ -89,6 +89,10 @@ function validatePoint(coordinates) {
   if (coordinates.length < 2 || coordinates.length > 3) {
     throw new mongoose.Error('Point' + coordinates + ' must contain two or three coordinates');
   }
+  // must have real numbers
+  if (isNaN(coordinates[0]) || isNaN(coordinates[1])) {
+    throw new mongoose.Error('Point must have real numbers');
+  }
   // must have two numbers
   if (typeof coordinates[0] !== 'number' || typeof coordinates[1] !== 'number') {
     throw new mongoose.Error('Point must have two numbers');
@@ -400,7 +404,6 @@ Geometry.prototype = Object.create(mongoose.SchemaType.prototype);
 Geometry.prototype.constructor = Geometry;
 
 Geometry.prototype.cast = function(geometry) {
-  // console.log(geometry);
   // must be an array (object)
   if (!geometry.type) {
     throw new mongoose.Error('Geometry must must have a type');

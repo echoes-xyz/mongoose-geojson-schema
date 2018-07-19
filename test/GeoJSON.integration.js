@@ -116,6 +116,13 @@ describe("GeoJSON Schema", function () {
       expect(error.errors.point.reason.message).to.contain('must contain two or three coordinates');
     });
 
+    it("should fail with a Point with NaN", function () {
+      pointData.point = [NaN, NaN];
+      var geoJSON = new GeoJSON(pointData);
+      var error = geoJSON.validateSync();
+      expect(error.errors.point.message).to.contain('Cast to Point failed');
+    });
+
     it("should fail when Point is not described as a Point", function () {
       pointData.point.type = "Square";
       var geoJSON = new GeoJSON(pointData);
@@ -282,6 +289,13 @@ describe("GeoJSON Schema", function () {
     });
 
     it("should return a valid Polygon", function () {
+      var geoJSON = new GeoJSON(polygonData);
+      var error = geoJSON.validateSync();
+      expect(error).to.be.an('undefined');
+    });
+
+    it("should succeed with a null value for the polygon field", function () {
+      polygonData.polygon = null;
       var geoJSON = new GeoJSON(polygonData);
       var error = geoJSON.validateSync();
       expect(error).to.be.an('undefined');
