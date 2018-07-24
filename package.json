@@ -36,7 +36,6 @@
     "jshint": "^2.9.5",
     "jshint-stylish": "^2.2.1",
     "mocha": "^2.4.5",
-    "mongoose": "^4.10.8",
-    "supertest": "^1.2.0"
+    "mongoose": "^4.10.8"
   }
 }
