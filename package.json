@@ -1,10 +1,10 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "index.js",
   "scripts": {
-    "test": "gulp"
+    "test": "jshint index.js && mocha"
   },
   "keywords": [
     "mongo",
@@ -30,12 +30,9 @@
   "devDependencies": {
     "bluebird": "^3.3.5",
     "chai": "~3.5.0",
-    "gulp": "^3.9.1",
-    "gulp-jshint": "^2.1.0",
-    "gulp-mocha": "^4.3.1",
     "jshint": "^2.9.5",
     "jshint-stylish": "^2.2.1",
     "mocha": "^5.2.0",
-    "mongoose": "^4.10.8"
+    "mongoose": "^5.2.5"
   }
 }

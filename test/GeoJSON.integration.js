@@ -12,7 +12,7 @@ var chai = require('chai'),
 
 describe("GeoJSON Schema", function () {
 
-  var db = mongoose.createConnection('localhost', 'test');
+  var db = mongoose.createConnection('mongodb://localhost:27017/test');
   var GeoJSON = db.model('GeoJSON', geoJSONSchema);
   var pointData;
   var multiPointData;
