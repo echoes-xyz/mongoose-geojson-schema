@@ -33,6 +33,6 @@
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
     "mocha": "^5.2.0",
-    "mongoose": "^5.2.5"
+    "mongoose": "^5.4.20"
   }
 }
