@@ -28,11 +28,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "bluebird": "^3.3.5",
-    "chai": "~3.5.0",
-    "jshint": "^2.9.6",
+    "bluebird": "^3.7.2",
+    "chai": "~4.2.0",
+    "jshint": "^2.10.3",
     "jshint-stylish": "^2.2.1",
-    "mocha": "^5.2.0",
-    "mongoose": "^5.4.20"
+    "mocha": "^6.2.2",
+    "mongoose": "^5.8.0"
   }
 }
