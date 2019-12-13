@@ -1,10 +1,10 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "index.js",
   "scripts": {
-    "test": "jshint index.js && mocha"
+    "test": "mocha"
   },
   "keywords": [
     "mongo",
@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rideamigoscorp/mongoose-geojson-schema.git"
+    "url": "https://github.com/echoes-xyz/mongoose-geojson-schema"
   },
   "author": "Ben Dalton <ben@rideamigos.com>",
   "contributors": [
