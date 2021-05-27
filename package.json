@@ -28,12 +28,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "bluebird": "^3.7.2",
-    "chai": "~4.2.0",
-    "eslint": "^6.7.2",
+    "chai": "~4.3.4",
+    "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.19.1",
-    "mocha": "^6.2.2",
-    "mongoose": "^5.8.0"
+    "mocha": "^8.4.0",
+    "mongoose": "^5.12.11"
   }
 }
