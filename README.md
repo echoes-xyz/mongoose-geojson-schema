@@ -144,6 +144,10 @@ var schema = new mongoose.Schema({
 npm test
 ```
 
+## See Also
+
+ * If you are developing in TypeScript, you can load [GeoJSON Types](https://www.npmjs.com/package/@types/geojson) to validate GeoJSON objects througout your code. 
+
 ## Contributors
 
 [Ben Dalton](https://github.com/bendalton), [Mark Stosberg](https://github.com/markstos), [Joshua Kopecek](https://github.com/joshkopecek)
