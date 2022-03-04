@@ -44,46 +44,52 @@ function validateCrs(crs) {
   }
 }
 
-/**
- * @SchemaType GeoJSON
- *
- */
+class GeoJSON extends mongoose.SchemaType {
+  static schemaName = 'GeoJSON'
 
-function GeoJSON(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'GeoJSON')
+  constructor (key, options) {
+    super(key, options, 'GeoJSON')
+  }
+  cast (geojson) {
+    if (!geojson.type) {
+      throw new mongoose.Error('GeoJSON objects must have a type')
+    }
+
+    var TypeClass = mongoose.Schema.Types[geojson.type]
+    if (!TypeClass) {
+      throw new mongoose.Error(geojson.type + ' is not a valid GeoJSON type')
+    }
+
+    return TypeClass.prototype.cast.apply(this, arguments)
+  }
 }
 
-GeoJSON.schemaName = 'GeoJSON'
+class Point extends mongoose.SchemaType {
+  static schemaName = 'Point'
 
-GeoJSON.prototype = Object.create(mongoose.SchemaType.prototype)
-GeoJSON.prototype.constructor = GeoJSON
-
-GeoJSON.prototype.cast = function(geojson) {
-  if (!geojson.type) {
-    throw new mongoose.Error('GeoJSON objects must have a type')
+  constructor (key, options) {
+    super(key, options, 'Point')
   }
 
-  var TypeClass = mongoose.Schema.Types[geojson.type]
-  if (!TypeClass) {
-    throw new mongoose.Error(geojson.type + ' is not a valid GeoJSON type')
+  cast (point) {
+    if (!point.type) {
+      throw new mongoose.Error('Point', point.type, 'point.type')
+    }
+    // type must be Point
+    if (point.type !== 'Point') {
+      throw new mongoose.Error(point.type + ' is not a valid GeoJSON type')
+    }
+    // check for crs
+    if (point.crs) {
+      crs = point.crs
+      validateCrs(crs)
+    } else {
+      crs = undefined
+    }
+    validatePoint(point.coordinates)
+    return point
   }
-
-  return TypeClass.prototype.cast.apply(this, arguments)
 }
-
-Schema.Types.GeoJSON = GeoJSON
-Types.GeoJSON = GeoJSON
-
-/**
- * @SchemaType Point
- *
- */
-
-function Point(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Point')
-}
-
-Point.schemaName = 'Point'
 
 function validatePoint(coordinates) {
   // must be an array (object)
@@ -127,41 +133,34 @@ function validatePoint(coordinates) {
   }
 }
 
-Point.prototype = Object.create(mongoose.SchemaType.prototype)
-Point.prototype.constructor = Point
+class MultiPoint extends mongoose.SchemaType {
+  static schemaName = 'MultiPoint'
 
-Point.prototype.cast = function(point) {
-  if (!point.type) {
-    throw new mongoose.Error('Point', point.type, 'point.type')
+  constructor (key, options) {
+    super(key, options, 'MultiPoint')
   }
-  // type must be Point
-  if (point.type !== 'Point') {
-    throw new mongoose.Error(point.type + ' is not a valid GeoJSON type')
+
+  cast (multipoint) {
+    // must be an array (object)
+    if (typeof multipoint.coordinates !== 'object') {
+      throw new mongoose.Error('MultiPoint must be an array')
+    }
+    if (!multipoint.type) {
+      throw new mongoose.Error('MultiPoint must have a type')
+    }
+    // type must be MultiPoint
+    if (multipoint.type !== 'MultiPoint') {
+      throw new mongoose.Error(multipoint.type + ' is not a valid GeoJSON type')
+    }
+    // check for crs
+    if (multipoint.crs) {
+      crs = multipoint.crs
+      validateCrs(crs)
+    }
+    validateMultiPoint(multipoint.coordinates)
+    return multipoint
   }
-  // check for crs
-  if (point.crs) {
-    crs = point.crs
-    validateCrs(crs)
-  } else {
-    crs = undefined
-  }
-  validatePoint(point.coordinates)
-  return point
 }
-
-Schema.Types.Point = Point
-Types.Point = Point
-
-/**
- * @SchemaType MultiPoint
- *
- */
-
-function MultiPoint(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiPoint')
-}
-
-MultiPoint.schemaName = 'MultiPoint'
 
 function validateMultiPoint(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -169,43 +168,34 @@ function validateMultiPoint(coordinates) {
   }
 }
 
-MultiPoint.prototype = Object.create(mongoose.SchemaType.prototype)
-MultiPoint.prototype.constructor = MultiPoint
+class LineString extends mongoose.SchemaType {
+  static schemaName = 'LineString'
 
-MultiPoint.prototype.cast = function(multipoint) {
-  // must be an array (object)
-  if (typeof multipoint.coordinates !== 'object') {
-    throw new mongoose.Error('MultiPoint must be an array')
+  constructor (key, options) {
+    super(key, options, 'LineString')
   }
-  if (!multipoint.type) {
-    throw new mongoose.Error('MultiPoint must have a type')
+
+  cast (linestring) {
+    if (!linestring.type) {
+      throw new mongoose.Error('LineString must have a type')
+    }
+    // type must be LineString
+    if (linestring.type !== 'LineString') {
+      throw new mongoose.Error(linestring.type + ' is not a valid GeoJSON type')
+    }
+    // must have at least two Points
+    if (linestring.coordinates.length < 2) {
+      throw new mongoose.Error('LineString type must have at least two Points')
+    }
+    // check for crs
+    if (linestring.crs) {
+      crs = linestring.crs
+      validateCrs(crs)
+    }
+    validateLineString(linestring.coordinates)
+    return linestring
   }
-  // type must be MultiPoint
-  if (multipoint.type !== 'MultiPoint') {
-    throw new mongoose.Error(multipoint.type + ' is not a valid GeoJSON type')
-  }
-  // check for crs
-  if (multipoint.crs) {
-    crs = multipoint.crs
-    validateCrs(crs)
-  }
-  validateMultiPoint(multipoint.coordinates)
-  return multipoint
 }
-
-Schema.Types.MultiPoint = MultiPoint
-Types.MultiPoint = MultiPoint
-
-/**
- * @SchemaType LineString
- *
- */
-
-function LineString(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'LineString')
-}
-
-LineString.schemaName = 'LineString'
 
 function validateLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -213,43 +203,34 @@ function validateLineString(coordinates) {
   }
 }
 
-LineString.prototype = Object.create(mongoose.SchemaType.prototype)
-LineString.prototype.constructor = LineString
+class MultiLineString extends mongoose.SchemaType {
+  static schemaName = 'MultiLineString'
 
-LineString.prototype.cast = function(linestring) {
-  if (!linestring.type) {
-    throw new mongoose.Error('LineString must have a type')
+  constructor (key, options) {
+    super(key, options, 'MultiLineString')
   }
-  // type must be LineString
-  if (linestring.type !== 'LineString') {
-    throw new mongoose.Error(linestring.type + ' is not a valid GeoJSON type')
+
+  cast (multilinestring) {
+    // must be an array (object)
+    if (typeof multilinestring.coordinates !== 'object') {
+      throw new mongoose.Error('MultiLineString must be an array')
+    }
+    if (!multilinestring.type) {
+      throw new mongoose.Error(
+        'MultiLineString',
+        multilinestring.type + ' must have a type'
+      )
+    }
+    // type must be MultiLineString
+    if (multilinestring.type !== 'MultiLineString') {
+      throw new mongoose.Error(
+        multilinestring.type + ' is not a valid GeoJSON type'
+      )
+    }
+    validateMultiLineString(multilinestring.coordinates)
+    return multilinestring
   }
-  // must have at least two Points
-  if (linestring.coordinates.length < 2) {
-    throw new mongoose.Error('LineString type must have at least two Points')
-  }
-  // check for crs
-  if (linestring.crs) {
-    crs = linestring.crs
-    validateCrs(crs)
-  }
-  validateLineString(linestring.coordinates)
-  return linestring
 }
-
-Schema.Types.LineString = LineString
-Types.LineString = LineString
-
-/**
- * @SchemaType MultiLineString
- *
- */
-
-function MultiLineString(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiLineString')
-}
-
-MultiLineString.schemaName = 'MultiLineString'
 
 function validateMultiLineString(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -257,43 +238,30 @@ function validateMultiLineString(coordinates) {
   }
 }
 
-MultiLineString.prototype = Object.create(mongoose.SchemaType.prototype)
-MultiLineString.prototype.constructor = MultiLineString
+class Polygon extends mongoose.SchemaType {
+  static schemaName = 'Polygon'
 
-MultiLineString.prototype.cast = function(multilinestring) {
-  // must be an array (object)
-  if (typeof multilinestring.coordinates !== 'object') {
-    throw new mongoose.Error('MultiLineString must be an array')
+  constructor (key, options) {
+    super(key, options, 'Polygon')
   }
-  if (!multilinestring.type) {
-    throw new mongoose.Error(
-      'MultiLineString',
-      multilinestring.type + ' must have a type'
-    )
+
+  cast (polygon) {
+    if (!polygon.type) {
+      throw new mongoose.Error('Polygon', polygon.type + ' must have a type')
+    }
+    // type must be Polygon
+    if (polygon.type !== 'Polygon') {
+      throw new mongoose.Error(polygon.type + ' is not a valid GeoJSON type')
+    }
+    // check for crs
+    if (polygon.crs) {
+      crs = polygon.crs
+      validateCrs(crs)
+    }
+    validatePolygon(polygon.coordinates)
+    return polygon
   }
-  // type must be MultiLineString
-  if (multilinestring.type !== 'MultiLineString') {
-    throw new mongoose.Error(
-      multilinestring.type + ' is not a valid GeoJSON type'
-    )
-  }
-  validateMultiLineString(multilinestring.coordinates)
-  return multilinestring
 }
-
-Schema.Types.MultiLineString = MultiLineString
-Types.MultiLineString = MultiLineString
-
-/**
- * @SchemaType Polygon
- *
- */
-
-function Polygon(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Polygon')
-}
-
-Polygon.schemaName = 'Polygon'
 
 function arraysEqual(arr1, arr2) {
   if (arr1.length !== arr2.length) return false
@@ -324,39 +292,34 @@ function validatePolygon(coordinates) {
   }
 }
 
-Polygon.prototype = Object.create(mongoose.SchemaType.prototype)
-Polygon.prototype.constructor = Polygon
+class MultiPolygon extends mongoose.SchemaType {
+  static schemaName = 'MultiPolygon'
 
-Polygon.prototype.cast = function(polygon) {
-  if (!polygon.type) {
-    throw new mongoose.Error('Polygon', polygon.type + ' must have a type')
+  constructor (key, options) {
+    super(key, options, 'MultiPolygon')
   }
-  // type must be Polygon
-  if (polygon.type !== 'Polygon') {
-    throw new mongoose.Error(polygon.type + ' is not a valid GeoJSON type')
+
+  cast (multipolygon) {
+    // must be an array (object)
+    if (typeof multipolygon.coordinates !== 'object') {
+      throw new mongoose.Error('MultiPolygon must be an array')
+    }
+    if (!multipolygon.type) {
+      throw new mongoose.Error('MultiPolygon must have a type')
+    }
+    // type must be Polygon
+    if (multipolygon.type !== 'MultiPolygon') {
+      throw new mongoose.Error(multipolygon.type + ' is not a valid GeoJSON type')
+    }
+    // check for crs
+    if (multipolygon.crs) {
+      crs = multipolygon.crs
+      validateCrs(crs)
+    }
+    validateMultiPolygon(multipolygon.coordinates)
+    return multipolygon
   }
-  // check for crs
-  if (polygon.crs) {
-    crs = polygon.crs
-    validateCrs(crs)
-  }
-  validatePolygon(polygon.coordinates)
-  return polygon
 }
-
-Schema.Types.Polygon = Polygon
-Types.Polygon = Polygon
-
-/**
- * @SchemaType MultiPolygon
- *
- */
-
-function MultiPolygon(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'MultiPolygon')
-}
-
-MultiPolygon.schemaName = 'MultiPolygon'
 
 function validateMultiPolygon(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {
@@ -364,43 +327,27 @@ function validateMultiPolygon(coordinates) {
   }
 }
 
-MultiPolygon.prototype = Object.create(mongoose.SchemaType.prototype)
-MultiPolygon.prototype.constructor = MultiPolygon
+class Geometry extends mongoose.SchemaType {
+  static schemaName = 'Geometry'
 
-MultiPolygon.prototype.cast = function(multipolygon) {
-  // must be an array (object)
-  if (typeof multipolygon.coordinates !== 'object') {
-    throw new mongoose.Error('MultiPolygon must be an array')
+  constructor (key, options) {
+    super(key, options, 'Geometry')
   }
-  if (!multipolygon.type) {
-    throw new mongoose.Error('MultiPolygon must have a type')
+
+  cast (geometry) {
+    // must be an array (object)
+    if (!geometry.type) {
+      throw new mongoose.Error('Geometry must must have a type')
+    }
+    // check for crs
+    if (geometry.crs) {
+      crs = geometry.crs
+      validateCrs(crs)
+    }
+    validateGeometry(geometry)
+    return geometry
   }
-  // type must be Polygon
-  if (multipolygon.type !== 'MultiPolygon') {
-    throw new mongoose.Error(multipolygon.type + ' is not a valid GeoJSON type')
-  }
-  // check for crs
-  if (multipolygon.crs) {
-    crs = multipolygon.crs
-    validateCrs(crs)
-  }
-  validateMultiPolygon(multipolygon.coordinates)
-  return multipolygon
 }
-
-Schema.Types.MultiPolygon = MultiPolygon
-Types.MultiPolygon = MultiPolygon
-
-/**
- * @SchemaType Geometry
- *
- */
-
-function Geometry(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Geometry')
-}
-
-Geometry.schemaName = 'Geometry'
 
 function validateGeometry(geometry) {
   switch (geometry.type) {
@@ -427,36 +374,27 @@ function validateGeometry(geometry) {
   }
 }
 
-Geometry.prototype = Object.create(mongoose.SchemaType.prototype)
-Geometry.prototype.constructor = Geometry
+class GeometryCollection extends mongoose.SchemaType {
+  static schemaName = 'GeometryCollection'
 
-Geometry.prototype.cast = function(geometry) {
-  // must be an array (object)
-  if (!geometry.type) {
-    throw new mongoose.Error('Geometry must must have a type')
+  constructor (key, options) {
+    super(key, options, 'GeometryCollection')
   }
-  // check for crs
-  if (geometry.crs) {
-    crs = geometry.crs
-    validateCrs(crs)
+
+  cast (geometrycollection) {
+    // must be an array (object)
+    if (typeof geometrycollection.geometries !== 'object') {
+      throw new mongoose.Error('GeometryCollection must be an array')
+    }
+    // check for crs
+    if (geometrycollection.crs) {
+      crs = geometrycollection.crs
+      validateCrs(crs)
+    }
+    validateGeometries(geometrycollection.geometries)
+    return geometrycollection
   }
-  validateGeometry(geometry)
-  return geometry
 }
-
-Schema.Types.Geometry = Geometry
-Types.Geometry = Geometry
-
-/**
- * @SchemaType GeometryCollection
- *
- */
-
-function GeometryCollection(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'GeometryCollection')
-}
-
-GeometryCollection.schemaName = 'GeometryCollection'
 
 function validateGeometries(geometries) {
   for (var i = 0; i < geometries.length; i++) {
@@ -464,36 +402,18 @@ function validateGeometries(geometries) {
   }
 }
 
-GeometryCollection.prototype = Object.create(mongoose.SchemaType.prototype)
-GeometryCollection.prototype.constructor = GeometryCollection
+class Feature extends mongoose.SchemaType {
+  static schemaName = 'Feature'
 
-GeometryCollection.prototype.cast = function(geometrycollection) {
-  // must be an array (object)
-  if (typeof geometrycollection.geometries !== 'object') {
-    throw new mongoose.Error('GeometryCollection must be an array')
+  constructor (key, options) {
+    super(key, options, 'Feature')
   }
-  // check for crs
-  if (geometrycollection.crs) {
-    crs = geometrycollection.crs
-    validateCrs(crs)
+
+  cast (feature) {
+    validateFeature(feature)
+    return feature
   }
-  validateGeometries(geometrycollection.geometries)
-  return geometrycollection
 }
-
-Schema.Types.GeometryCollection = GeometryCollection
-Types.GeometryCollection = GeometryCollection
-
-/**
- * @SchemaType Feature
- *
- */
-
-function Feature(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'Feature')
-}
-
-Feature.schemaName = 'Feature'
 
 function validateFeature(feature) {
   if (!feature.type) {
@@ -514,27 +434,35 @@ function validateFeature(feature) {
   validateGeometry(feature.geometry)
 }
 
-Feature.prototype = Object.create(mongoose.SchemaType.prototype)
-Feature.prototype.constructor = Feature
+class FeatureCollection extends mongoose.SchemaType {
+  static schemaName = 'FeatureCollection'
 
-Feature.prototype.cast = function(feature) {
-  validateFeature(feature)
-  return feature
+  constructor (key, options) {
+    super(key, options, 'FeatureCollection')
+  }
+
+  cast (featurecollection) {
+    if (!featurecollection.type) {
+      throw new mongoose.Error('FeatureCollection must have a type')
+    }
+    // type must be Polygon
+    if (featurecollection.type !== 'FeatureCollection') {
+      throw new mongoose.Error(
+        featurecollection.type + ' is not a valid GeoJSON type'
+      )
+    }
+    if (!featurecollection.features) {
+      throw new mongoose.Error('FeatureCollections must have a features object')
+    }
+    // check for crs
+    if (featurecollection.crs) {
+      crs = featurecollection.crs
+      validateCrs(crs)
+    }
+    validateFeatureCollection(featurecollection)
+    return featurecollection
+  }
 }
-
-Schema.Types.Feature = Feature
-Types.Feature = Feature
-
-/**
- * @SchemaType FeatureCollection
- *
- */
-
-function FeatureCollection(key, options) {
-  mongoose.SchemaType.call(this, key, options, 'FeatureCollection')
-}
-
-FeatureCollection.schemaName = 'FeatureCollection'
 
 function validateFeatureCollection(featurecollection) {
   for (var i = 0; i < featurecollection.features.length; i++) {
@@ -543,30 +471,26 @@ function validateFeatureCollection(featurecollection) {
   return featurecollection
 }
 
-FeatureCollection.prototype = Object.create(mongoose.SchemaType.prototype)
-FeatureCollection.prototype.constructor = FeatureCollection
-
-FeatureCollection.prototype.cast = function(featurecollection) {
-  if (!featurecollection.type) {
-    throw new mongoose.Error('FeatureCollection must have a type')
-  }
-  // type must be Polygon
-  if (featurecollection.type !== 'FeatureCollection') {
-    throw new mongoose.Error(
-      featurecollection.type + ' is not a valid GeoJSON type'
-    )
-  }
-  if (!featurecollection.features) {
-    throw new mongoose.Error('FeatureCollections must have a features object')
-  }
-  // check for crs
-  if (featurecollection.crs) {
-    crs = featurecollection.crs
-    validateCrs(crs)
-  }
-  validateFeatureCollection(featurecollection)
-  return featurecollection
-}
-
+Schema.Types.Feature = Feature
 Schema.Types.FeatureCollection = FeatureCollection
+Schema.Types.GeoJSON = GeoJSON
+Schema.Types.Geometry = Geometry
+Schema.Types.GeometryCollection = GeometryCollection
+Schema.Types.LineString = LineString
+Schema.Types.MultiLineString = MultiLineString
+Schema.Types.MultiPoint = MultiPoint
+Schema.Types.MultiPolygon = MultiPolygon
+Schema.Types.Point = Point
+Schema.Types.Polygon = Polygon
+
+Types.Feature = Feature
 Types.FeatureCollection = FeatureCollection
+Types.GeoJSON = GeoJSON
+Types.Geometry = Geometry
+Types.GeometryCollection = GeometryCollection
+Types.LineString = LineString
+Types.MultiLineString = MultiLineString
+Types.MultiPoint = MultiPoint
+Types.MultiPolygon = MultiPolygon
+Types.Point = Point
+Types.Polygon = Polygon
