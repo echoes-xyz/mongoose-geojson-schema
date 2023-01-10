@@ -1,6 +1,6 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "index.js",
   "scripts": {
