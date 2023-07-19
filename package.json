@@ -28,9 +28,9 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.3.6",
-    "eslint": "^8.31.0",
-    "mocha": "^9.2.1",
-    "mongoose": "^6.4.6"
+    "chai": "^4.3.7",
+    "eslint": "^8.45.0",
+    "mocha": "^10.2.0",
+    "mongoose": "^7.4.0"
   }
 }

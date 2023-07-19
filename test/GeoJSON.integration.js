@@ -25,7 +25,7 @@ describe('GeoJSON Schema', function () {
   var featureCollectionData
 
   before(async function () {
-    await GeoJSON.find({}).remove()
+    await GeoJSON.find({}).deleteMany()
   })
 
   describe('Point', function () {
