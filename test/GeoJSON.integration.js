@@ -4,13 +4,13 @@
  */
 'use strict'
 
-var chai = require('chai'),
-  expect = chai.expect,
-  mongoose = require('mongoose'),
-  ObjectId = mongoose.Types.ObjectId,
-  geoJSONSchema = require('./test.model')
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const geoJSONSchema = require('./test.model');
 
-describe('GeoJSON Schema', function () {
+let expect;
+
+describe('GeoJSON Schema', () => {
   var db = mongoose.createConnection('mongodb://localhost:27017/test')
   var GeoJSON = db.model('GeoJSON', geoJSONSchema)
   var pointData
@@ -25,6 +25,8 @@ describe('GeoJSON Schema', function () {
   var featureCollectionData
 
   before(async function () {
+    const chai  = await import('chai');
+    expect = chai.expect;
     await GeoJSON.find({}).deleteMany()
   })
 
