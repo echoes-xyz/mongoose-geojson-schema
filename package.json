@@ -24,13 +24,14 @@
   },
   "author": "Ben Dalton <ben@rideamigos.com>",
   "contributors": [
+    "Mark Stosberg <mark@rideamigos.com>",
     "Josh Kopeček <josh@echoes.xyz>"
   ],
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.3.7",
-    "eslint": "^8.45.0",
-    "mocha": "^10.2.0",
-    "mongoose": "^7.4.0"
+    "chai": "^5.1.1",
+    "eslint": "^9.11.1",
+    "mocha": "^10.7.3",
+    "mongoose": "^8.7.0"
   }
 }

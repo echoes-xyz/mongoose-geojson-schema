@@ -39,8 +39,9 @@ $ npm install mongoose-geojson-schema --save
 ## Usage v2.x
 
 ```javascript
-var GeoJSON = require('mongoose-geojson-schema');
-var mongoose = require('mongoose');
+// requiring it modifies mongoose by side-effect
+const mongoose = require('mongoose');
+require('mongoose-geojson-schema');
 
 var schema = new mongoose.Schema({
 	any: mongoose.Schema.Types.GeoJSON,
@@ -87,10 +88,10 @@ var test = new Location({
 ## Usage v1.x
 
 ```javascript
-var GeoJSON = require('mongoose-geojson-schema');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+require('mongoose-geojson-schema');
 
-var schema = new mongoose.Schema({
+const schema = new mongoose.Schema({
 	point: mongoose.Schema.Types.Point,
 	multipoint: mongoose.Schema.Types.MultiPoint,
 	linestring: mongoose.Schema.Types.LineString,
@@ -103,10 +104,10 @@ var schema = new mongoose.Schema({
 	featurecollection: mongoose.Schema.Types.FeatureCollection
 });
 
-var db = mongoose.createConnection('localhost', 'test');
-var model = db.model('GeoJSON', schema);
+const db = mongoose.createConnection('localhost', 'test');
+const model = db.model('GeoJSON', schema);
 
-var test = new GeoJSON({
+const test = new GeoJSON({
 	point: {
 	  type: "Point",
 	  coordinates: [12.123456, 13.134578]
@@ -150,7 +151,9 @@ npm test
 
 ## Contributors
 
-[Ben Dalton](https://github.com/bendalton), [Mark Stosberg](https://github.com/markstos), [Joshua Kopecek](https://github.com/joshkopecek)
+* [Joshua Kopecek](https://github.com/joshkopecek)
+* [Mark Stosberg](https://github.com/markstos)
+* [Ben Dalton](https://github.com/bendalton)
 
 ## License
 

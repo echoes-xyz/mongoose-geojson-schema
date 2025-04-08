@@ -1,7 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var GeoJSON = require('../');
+require('../');
 
 var TestSchema = new mongoose.Schema({
   title: String,
