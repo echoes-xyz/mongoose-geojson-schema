@@ -3,6 +3,7 @@
   "version": "2.2.6",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "mocha"
   },
@@ -29,10 +30,12 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "chai": "^5.1.1",
     "eslint": "^9.11.1",
     "mocha": "^10.7.3",
-    "mongoose": "^7.8.4"
+    "mongoose": "^7.8.4",
+    "typescript": "^5.9.2"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
