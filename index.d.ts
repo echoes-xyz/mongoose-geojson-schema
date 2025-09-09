@@ -1,94 +1,18 @@
 import * as mongoose from 'mongoose';
+import {
+  GeoJSON,
+  Point,
+  MultiPoint,
+  LineString,
+  MultiLineString,
+  Polygon,
+  MultiPolygon,
+  Geometry,
+  GeometryCollection,
+  Feature,
+  FeatureCollection
+} from 'geojson';
 
-// GeoJSON Coordinate Reference System types
-export interface CrsName {
-  type: 'name';
-  properties: {
-    name: string;
-  };
-}
-
-export interface CrsLink {
-  type: 'link';
-  properties: {
-    href: string;
-    type: string;
-  };
-}
-
-export type Crs = CrsName | CrsLink;
-
-// GeoJSON coordinate types
-export type Position = [number, number] | [number, number, number]; // [longitude, latitude, altitude?]
-
-// GeoJSON Geometry Objects
-export interface Point {
-  type: 'Point';
-  coordinates: Position;
-  crs?: Crs;
-}
-
-export interface MultiPoint {
-  type: 'MultiPoint';
-  coordinates: Position[];
-  crs?: Crs;
-}
-
-export interface LineString {
-  type: 'LineString';
-  coordinates: Position[];
-  crs?: Crs;
-}
-
-export interface MultiLineString {
-  type: 'MultiLineString';
-  coordinates: Position[][];
-  crs?: Crs;
-}
-
-export interface Polygon {
-  type: 'Polygon';
-  coordinates: Position[][];
-  crs?: Crs;
-}
-
-export interface MultiPolygon {
-  type: 'MultiPolygon';
-  coordinates: Position[][][];
-  crs?: Crs;
-}
-
-export type GeometryObject = Point | MultiPoint | LineString | MultiLineString | Polygon | MultiPolygon;
-
-export interface Geometry {
-  type: 'Point' | 'MultiPoint' | 'LineString' | 'MultiLineString' | 'Polygon' | 'MultiPolygon';
-  coordinates: Position | Position[] | Position[][] | Position[][][];
-  crs?: Crs;
-}
-
-export interface GeometryCollection {
-  type: 'GeometryCollection';
-  geometries: GeometryObject[];
-  crs?: Crs;
-}
-
-// GeoJSON Feature Objects
-export interface Feature<G extends GeometryObject = GeometryObject, P = any> {
-  type: 'Feature';
-  geometry: G;
-  properties?: P;
-  id?: string | number;
-  crs?: Crs;
-}
-
-export interface FeatureCollection<G extends GeometryObject = GeometryObject, P = any> {
-  type: 'FeatureCollection';
-  features: Feature<G, P>[];
-  crs?: Crs;
-}
-
-// GeoJSON type that can be any valid GeoJSON object
-export type GeoJSON = GeometryObject | GeometryCollection | Feature | FeatureCollection;
 
 // Mongoose SchemaType classes
 declare class GeoJSONSchemaType extends mongoose.SchemaType {
