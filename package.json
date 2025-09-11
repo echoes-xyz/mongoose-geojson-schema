@@ -37,7 +37,7 @@
     "mongoose": "^7.8.4",
     "typescript": "^5.9.2"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+  "packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67",
   "dependencies": {
     "@types/geojson": "^7946.0.16"
   }
