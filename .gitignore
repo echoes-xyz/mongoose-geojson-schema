@@ -3,12 +3,7 @@ node_modules/
 
 # Build output
 dist/
-
-# Generated files (built from TypeScript)
-index.js
-index.d.ts
-index.js.map
-index.d.ts.map
+*.tsbuildinfo
 
 # Logs
 *.log

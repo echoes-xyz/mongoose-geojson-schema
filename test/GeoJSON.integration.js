@@ -11,8 +11,8 @@ const geoJSONSchema = require('./test.model');
 let expect;
 
 describe('GeoJSON Schema', () => {
-  var db = mongoose.createConnection('mongodb://localhost:27017/test')
-  var GeoJSON = db.model('GeoJSON', geoJSONSchema)
+  // No need for actual MongoDB connection - just testing schema validation
+  var GeoJSON = mongoose.model('GeoJSON', geoJSONSchema)
   var pointData
   var multiPointData
   var lineStringData
@@ -27,7 +27,6 @@ describe('GeoJSON Schema', () => {
   before(async function () {
     const chai  = await import('chai');
     expect = chai.expect;
-    await GeoJSON.find({}).deleteMany()
   })
 
   describe('Point', function () {
