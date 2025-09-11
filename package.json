@@ -5,7 +5,11 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "mocha"
+    "build": "tsc && node scripts/build.js",
+    "build:watch": "tsc --watch",
+    "pretest": "npm run build",
+    "test": "mocha",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mongo",

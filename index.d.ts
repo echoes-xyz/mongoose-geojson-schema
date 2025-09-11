@@ -1,130 +1,71 @@
-import * as mongoose from 'mongoose';
-import {
-  GeoJSON,
-  Point,
-  MultiPoint,
-  LineString,
-  MultiLineString,
-  Polygon,
-  MultiPolygon,
-  Geometry,
-  GeometryCollection,
-  Feature,
-  FeatureCollection
-} from 'geojson';
-
-
-// Mongoose SchemaType classes
-declare class GeoJSONSchemaType extends mongoose.SchemaType {
-  static schemaName: 'GeoJSON';
-  constructor(key: string, options?: any);
-  cast(val: any): GeoJSON;
+/**
+ * GeoJSON Schemas for Mongoose
+ *
+ * rough GeoJSON schemas for use with mongoose schema creation
+ *
+ * Based on GeoJSON Spec @ http://geojson.org/geojson-spec.html
+ *
+ * Created by Ben Dalton (ben@rideamigos) on 3/27/14.
+ * Copyright RideAmigos (http://rideamigos.com)
+ * Updates and maintenance by Josh Kopecek (josh@echoes.xyz)
+ *
+ * */
+import mongoose from 'mongoose';
+import { GeoJSON as GeoJSONType, Point as PointType, MultiPoint as MultiPointType, LineString as LineStringType, MultiLineString as MultiLineStringType, Polygon as PolygonType, MultiPolygon as MultiPolygonType, Geometry as GeometryType, GeometryCollection as GeometryCollectionType, Feature as FeatureType, FeatureCollection as FeatureCollectionType } from 'geojson';
+declare class GeoJSON extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(geojson: any): GeoJSONType;
 }
-
-declare class PointSchemaType extends mongoose.SchemaType {
-  static schemaName: 'Point';
-  constructor(key: string, options?: any);
-  cast(val: any): Point;
+declare class Point extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(point: any): PointType;
 }
-
-declare class MultiPointSchemaType extends mongoose.SchemaType {
-  static schemaName: 'MultiPoint';
-  constructor(key: string, options?: any);
-  cast(val: any): MultiPoint;
+declare class MultiPoint extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(multipoint: any): MultiPointType;
 }
-
-declare class LineStringSchemaType extends mongoose.SchemaType {
-  static schemaName: 'LineString';
-  constructor(key: string, options?: any);
-  cast(val: any): LineString;
+declare class LineString extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(linestring: any): LineStringType;
 }
-
-declare class MultiLineStringSchemaType extends mongoose.SchemaType {
-  static schemaName: 'MultiLineString';
-  constructor(key: string, options?: any);
-  cast(val: any): MultiLineString;
+declare class MultiLineString extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(multilinestring: any): MultiLineStringType;
 }
-
-declare class PolygonSchemaType extends mongoose.SchemaType {
-  static schemaName: 'Polygon';
-  constructor(key: string, options?: any);
-  cast(val: any): Polygon;
+declare class Polygon extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(polygon: any): PolygonType;
 }
-
-declare class MultiPolygonSchemaType extends mongoose.SchemaType {
-  static schemaName: 'MultiPolygon';
-  constructor(key: string, options?: any);
-  cast(val: any): MultiPolygon;
+declare class MultiPolygon extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(multipolygon: any): MultiPolygonType;
 }
-
-declare class GeometrySchemaType extends mongoose.SchemaType {
-  static schemaName: 'Geometry';
-  constructor(key: string, options?: any);
-  cast(val: any): Geometry;
+declare class Geometry extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(geometry: any): GeometryType;
 }
-
-declare class GeometryCollectionSchemaType extends mongoose.SchemaType {
-  static schemaName: 'GeometryCollection';
-  constructor(key: string, options?: any);
-  cast(val: any): GeometryCollection;
+declare class GeometryCollection extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(geometrycollection: any): GeometryCollectionType;
 }
-
-declare class FeatureSchemaType extends mongoose.SchemaType {
-  static schemaName: 'Feature';
-  constructor(key: string, options?: any);
-  cast(val: any): Feature;
+declare class Feature extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(feature: any): FeatureType;
 }
-
-declare class FeatureCollectionSchemaType extends mongoose.SchemaType {
-  static schemaName: 'FeatureCollection';
-  constructor(key: string, options?: any);
-  cast(val: any): FeatureCollection;
+declare class FeatureCollection extends mongoose.SchemaType {
+    static schemaName: string;
+    constructor(key: string, options?: any);
+    cast(featurecollection: any): FeatureCollectionType;
 }
-
-// Module augmentation for mongoose Schema.Types
-declare module 'mongoose' {
-  namespace Schema {
-    namespace Types {
-      const GeoJSON: typeof GeoJSONSchemaType;
-      const Point: typeof PointSchemaType;
-      const MultiPoint: typeof MultiPointSchemaType;
-      const LineString: typeof LineStringSchemaType;
-      const MultiLineString: typeof MultiLineStringSchemaType;
-      const Polygon: typeof PolygonSchemaType;
-      const MultiPolygon: typeof MultiPolygonSchemaType;
-      const Geometry: typeof GeometrySchemaType;
-      const GeometryCollection: typeof GeometryCollectionSchemaType;
-      const Feature: typeof FeatureSchemaType;
-      const FeatureCollection: typeof FeatureCollectionSchemaType;
-    }
-  }
-
-  namespace Types {
-    const GeoJSON: typeof GeoJSONSchemaType;
-    const Point: typeof PointSchemaType;
-    const MultiPoint: typeof MultiPointSchemaType;
-    const LineString: typeof LineStringSchemaType;
-    const MultiLineString: typeof MultiLineStringSchemaType;
-    const Polygon: typeof PolygonSchemaType;
-    const MultiPolygon: typeof MultiPolygonSchemaType;
-    const Geometry: typeof GeometrySchemaType;
-    const GeometryCollection: typeof GeometryCollectionSchemaType;
-    const Feature: typeof FeatureSchemaType;
-    const FeatureCollection: typeof FeatureCollectionSchemaType;
-  }
-}
-
-// Re-export the types for convenience
-export {
-  GeoJSONSchemaType as GeoJSON,
-  PointSchemaType as Point,
-  MultiPointSchemaType as MultiPoint,
-  LineStringSchemaType as LineString,
-  MultiLineStringSchemaType as MultiLineString,
-  PolygonSchemaType as Polygon,
-  MultiPolygonSchemaType as MultiPolygon,
-  GeometrySchemaType as Geometry,
-  GeometryCollectionSchemaType as GeometryCollection,
-  FeatureSchemaType as Feature,
-  FeatureCollectionSchemaType as FeatureCollection
-};
+export { GeoJSON, Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, Geometry, GeometryCollection, Feature, FeatureCollection };
+//# sourceMappingURL=index.d.ts.map
