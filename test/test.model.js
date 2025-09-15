@@ -1,7 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose');
-require('../');
+require('../dist');
 
 var TestSchema = new mongoose.Schema({
   title: String,

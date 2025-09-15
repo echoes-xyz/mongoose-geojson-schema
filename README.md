@@ -36,14 +36,16 @@ First install [node.js](http://nodejs.org/), [mongodb](https://www.mongodb.org/d
 $ npm install mongoose-geojson-schema --save
 ```
 
-## Usage v2.x
+## Usage
+
+### JavaScript
 
 ```javascript
 // requiring it modifies mongoose by side-effect
 const mongoose = require('mongoose');
 require('mongoose-geojson-schema');
 
-var schema = new mongoose.Schema({
+const schema = new mongoose.Schema({
 	any: mongoose.Schema.Types.GeoJSON,
 	point: mongoose.Schema.Types.Point,
   multipoint: mongoose.Schema.Types.MultiPoint,
@@ -57,10 +59,10 @@ var schema = new mongoose.Schema({
   featurecollection: mongoose.Schema.Types.FeatureCollection
 });
 
-var db = mongoose.createConnection('localhost', 'test');
-var Location = db.model('GeoJSON', schema);
+const db = mongoose.createConnection('localhost', 'test');
+const Location = db.model('GeoJSON', schema);
 
-var test = new Location({
+const test = new Location({
 	any: {
 		type: "Point",
 		coordinates: [-113.806458, 44.847784]
@@ -69,7 +71,7 @@ var test = new Location({
 	  type: "Point",
 	  coordinates: [12.123456, 13.134578]
 	},
-	...
+	// ...
 	polygon: {
 		type: "Polygon",
 		coordinates: [
@@ -78,66 +80,70 @@ var test = new Location({
 				[179.999999, -1.345],
 				[12.0002, -45.4663],
 				[12.123456, 13.1345678]
-			],
-			...
+			]
+			// ...
+		]
 	}
 });
-
 ```
 
-## Usage v1.x
+### TypeScript
 
-```javascript
-const mongoose = require('mongoose');
-require('mongoose-geojson-schema');
+```typescript
+import mongoose from 'mongoose';
+import 'mongoose-geojson-schema';
+// or import individual types
+import { Point, Polygon, Feature } from 'mongoose-geojson-schema';
 
-const schema = new mongoose.Schema({
-	point: mongoose.Schema.Types.Point,
-	multipoint: mongoose.Schema.Types.MultiPoint,
-	linestring: mongoose.Schema.Types.LineString,
-	multilinestring: mongoose.Schema.Types.MultiLineString,
-	polygon: mongoose.Schema.Types.Polygon,
-	multipolygon: mongoose.Schema.Types.MultiPolygon,
-	geometry: mongoose.Schema.Types.Geometry,
-	geometrycollection: mongoose.Schema.Types.GeometryCollection,
-	feature: mongoose.Schema.Types.Feature,
-	featurecollection: mongoose.Schema.Types.FeatureCollection
+interface ILocation extends mongoose.Document {
+  name: string;
+  location: mongoose.Schema.Types.Point;
+  coverage: mongoose.Schema.Types.Polygon;
+  feature: mongoose.Schema.Types.Feature;
+}
+
+const LocationSchema = new mongoose.Schema<ILocation>({
+  name: { type: String, required: true },
+  location: {
+    type: mongoose.Schema.Types.Point,
+    required: true
+  },
+  coverage: mongoose.Schema.Types.Polygon,
+  feature: mongoose.Schema.Types.Feature
 });
 
-const db = mongoose.createConnection('localhost', 'test');
-const model = db.model('GeoJSON', schema);
+const Location = mongoose.model<ILocation>('Location', LocationSchema);
 
-const test = new GeoJSON({
-	point: {
-	  type: "Point",
-	  coordinates: [12.123456, 13.134578]
-	},
-	...
-	polygon: {
-		type: "Polygon",
-		coordinates: [
-			[
-				[12.123456, 13.1345678],
-				[179.999999, -1.345],
-				[12.0002, -45.4663],
-				[12.123456, 13.1345678]
-			],
-			...
-	}
+// Create a new location with type safety
+const location = new Location({
+  name: 'My Location',
+  location: {
+    type: 'Point',
+    coordinates: [-73.97, 40.77]
+  },
+  coverage: {
+    type: 'Polygon',
+    coordinates: [[
+      [-73.98, 40.76],
+      [-73.96, 40.76],
+      [-73.96, 40.78],
+      [-73.98, 40.78],
+      [-73.98, 40.76]
+    ]]
+  },
+  feature: {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [-73.97, 40.77]
+    },
+    properties: {
+      name: 'Feature Name'
+    }
+  }
 });
-
 ```
 
-## Usage v0.x
-
-```javascript
-var GeoJSON = require('mongoose-geojson-schema');
-var mongoose = require('mongoose');
-
-var schema = new mongoose.Schema({
-	geoFeature:GeoJSON.Feature
-});
-```
 
 ## Testing
 
