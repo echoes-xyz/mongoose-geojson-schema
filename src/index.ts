@@ -30,6 +30,18 @@ import {
 const { Schema } = mongoose;
 const { Types } = mongoose;
 
+function setupGeospatialHandlers(
+  schemaType: mongoose.SchemaType,
+  operators: string[]
+): void {
+  schemaType.$conditionalHandlers = schemaType.$conditionalHandlers ?? {};
+  for (const op of operators) {
+    schemaType.$conditionalHandlers[op] = function (val: any) {
+      return val;
+    };
+  }
+}
+
 interface CRS {
   type: "name" | "link";
   properties: {
@@ -96,6 +108,12 @@ class Point extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "Point");
+    setupGeospatialHandlers(this, [
+      "$geoIntersects",
+      "$geoWithin",
+      "$near",
+      "$nearSphere",
+    ]);
   }
 
   cast(point: any): PointType {
@@ -165,6 +183,7 @@ class MultiPoint extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "MultiPoint");
+    setupGeospatialHandlers(this, ["$geoIntersects"]);
   }
 
   cast(multipoint: any): MultiPointType {
@@ -202,6 +221,7 @@ class LineString extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "LineString");
+    setupGeospatialHandlers(this, ["$geoIntersects"]);
   }
 
   cast(linestring: any): LineStringType {
@@ -239,6 +259,7 @@ class MultiLineString extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "MultiLineString");
+    setupGeospatialHandlers(this, ["$geoIntersects"]);
   }
 
   cast(multilinestring: any): MultiLineStringType {
@@ -271,6 +292,7 @@ class Polygon extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "Polygon");
+    setupGeospatialHandlers(this, ["$geoIntersects", "$geoWithin"]);
   }
 
   cast(polygon: any): PolygonType {
@@ -325,6 +347,7 @@ class MultiPolygon extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "MultiPolygon");
+    setupGeospatialHandlers(this, ["$geoIntersects", "$geoWithin"]);
   }
 
   cast(multipolygon: any): MultiPolygonType {
@@ -362,6 +385,7 @@ class Geometry extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, "Geometry");
+    setupGeospatialHandlers(this, ["$geoIntersects"]);
   }
 
   cast(geometry: any): GeometryType {
