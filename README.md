@@ -1,8 +1,6 @@
 # mongoose-geojson-schema
 
-## About
-
-Schema definitions for GeoJSON types for use with [Mongoose JS](http://mongoosejs.com/), a mongodb object model.
+Schema definitions for GeoJSON types for use with [Mongoose JS](http://mongoosejs.com/), a MongoDB object model.
 
 The [GeoJSON Schema](http://geojson.org/) specifies geospatial data types for use in JSON-based projects. This package aims to make those data types available to those wanting to employ them in a [mongoose schema](http://mongoosejs.com), with validation following the strict guidelines available on the GeoJSON website. The following data types are available:
 * Point
@@ -28,100 +26,37 @@ longitude and latitude units of decimal degrees.
 If you wish to disable this validation, set the `crs` property to a `null` or alternate
 value [following the GeoJSON spec for Coordinate Reference Sytems](http://geojson.org/geojson-spec.html#coordinate-reference-system-objects)
 
-## Installation
-
-First install [node.js](http://nodejs.org/), [mongodb](https://www.mongodb.org/downloads) and [mongoose](https://www.npmjs.com/package/mongoose)
-
-```
-$ npm install mongoose-geojson-schema --save
-```
-
 ## Usage
+
+Import the GeoJSON schemas and use them as subdocuments in your Mongoose schemas:
+
+- **Required subdocument**: Use `{ type: SchemaName, required: true }` syntax
+- **Optional subdocument**: Use `SchemaName` directly
+
 
 ### JavaScript
 
 ```javascript
-// requiring it modifies mongoose by side-effect
-const mongoose = require('mongoose');
-require('mongoose-geojson-schema');
-
-const schema = new mongoose.Schema({
-	any: mongoose.Schema.Types.GeoJSON,
-	point: mongoose.Schema.Types.Point,
-  multipoint: mongoose.Schema.Types.MultiPoint,
-  linestring: mongoose.Schema.Types.LineString,
-  multilinestring: mongoose.Schema.Types.MultiLineString,
-  polygon: mongoose.Schema.Types.Polygon,
-  multipolygon: mongoose.Schema.Types.MultiPolygon,
-  geometry: mongoose.Schema.Types.Geometry,
-  geometrycollection: mongoose.Schema.Types.GeometryCollection,
-  feature: mongoose.Schema.Types.Feature,
-  featurecollection: mongoose.Schema.Types.FeatureCollection
-});
-
-const db = mongoose.createConnection('localhost', 'test');
-const Location = db.model('GeoJSON', schema);
-
-const test = new Location({
-	any: {
-		type: "Point",
-		coordinates: [-113.806458, 44.847784]
-	},
-	point: {
-	  type: "Point",
-	  coordinates: [12.123456, 13.134578]
-	},
-	// ...
-	polygon: {
-		type: "Polygon",
-		coordinates: [
-			[
-				[12.123456, 13.1345678],
-				[179.999999, -1.345],
-				[12.0002, -45.4663],
-				[12.123456, 13.1345678]
-			]
-			// ...
-		]
-	}
-});
-```
-
-### TypeScript
-
-```typescript
 import mongoose from 'mongoose';
-import 'mongoose-geojson-schema';
-// or import individual types
 import { Point, Polygon, Feature } from 'mongoose-geojson-schema';
 
-interface ILocation extends mongoose.Document {
-  name: string;
-  location: mongoose.Schema.Types.Point;
-  coverage: mongoose.Schema.Types.Polygon;
-  feature: mongoose.Schema.Types.Feature;
-}
-
-const LocationSchema = new mongoose.Schema<ILocation>({
+const LocationSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  location: {
-    type: mongoose.Schema.Types.Point,
-    required: true
-  },
-  coverage: mongoose.Schema.Types.Polygon,
-  feature: mongoose.Schema.Types.Feature
+  point: { type: Point, required: true },
+  polygon: Polygon,
+  feature: Feature
 });
 
-const Location = mongoose.model<ILocation>('Location', LocationSchema);
+const Location = mongoose.model('Location', LocationSchema);
 
-// Create a new location with type safety
+// Create a new location
 const location = new Location({
-  name: 'My Location',
-  location: {
+  name: 'Downtown District',
+  point: {
     type: 'Point',
     coordinates: [-73.97, 40.77]
   },
-  coverage: {
+  polygon: {
     type: 'Polygon',
     coordinates: [[
       [-73.98, 40.76],
@@ -138,11 +73,91 @@ const location = new Location({
       coordinates: [-73.97, 40.77]
     },
     properties: {
+      description: 'City center landmark'
+    }
+  }
+});
+
+await location.validate();
+await location.save();
+```
+
+### TypeScript
+
+```typescript
+import mongoose from 'mongoose';
+import { Point, Polygon, Feature } from 'mongoose-geojson-schema';
+import type { Feature as GeoJSONFeature } from 'geojson';
+
+interface ILocation extends mongoose.Document {
+  name: string;
+  point: any;
+  polygon?: any;
+  feature?: GeoJSONFeature;
+}
+
+const LocationSchema = new mongoose.Schema<ILocation>({
+  name: { type: String, required: true },
+  point: { type: Point, required: true },
+  polygon: Polygon,
+  feature: Feature
+});
+
+const Location = mongoose.model<ILocation>('Location', LocationSchema);
+
+const location = new Location({
+  name: 'My Location',
+  point: {
+    type: 'Point',
+    coordinates: [-73.97, 40.77]
+  },
+  feature: {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [-73.97, 40.77]
+    },
+    properties: {
       name: 'Feature Name'
     }
   }
 });
 ```
+
+### Extending Schemas
+
+Extend any GeoJSON schema by spreading its definition and adding custom fields. 
+For Feature, the recommended approach is to extend the `properties` field:
+
+```typescript
+import mongoose from 'mongoose';
+import { Feature } from 'mongoose-geojson-schema';
+
+// Define a schema for your custom properties
+const POIPropertiesSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    category: {
+      type: String,
+      enum: ['restaurant', 'hotel', 'park']
+    },
+    rating: { type: Number, min: 0, max: 5 }
+  },
+  { _id: false }
+);
+
+// Create a Feature with typed properties
+const POIFeatureSchema = new mongoose.Schema(
+  {
+    ...Feature.obj,
+    properties: POIPropertiesSchema  // Override with typed schema
+  },
+  { _id: false }
+);
+```
+
+- See Migration Guide: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+- See more extension patterns: [EXTENSION_EXAMPLE.md](./EXTENSION_EXAMPLE.md)
 
 
 ## Testing
@@ -153,7 +168,9 @@ npm test
 
 ## See Also
 
- * If you are developing in TypeScript, you can load [GeoJSON Types](https://www.npmjs.com/package/@types/geojson) to validate GeoJSON objects througout your code. 
+- [GeoJSON Types](https://www.npmjs.com/package/@types/geojson) for TypeScript type definitions
+- [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for upgrading from v2
+- [EXTENSION_EXAMPLE.md](./EXTENSION_EXAMPLE.md) for advanced usage patterns
 
 ## Contributors
 

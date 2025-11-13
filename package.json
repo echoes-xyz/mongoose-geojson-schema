@@ -1,6 +1,6 @@
 {
   "name": "mongoose-geojson-schema",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Schema definitions for GeoJSON types for use with Mongoose JS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -38,7 +38,7 @@
     "chai": "^5.1.1",
     "eslint": "^9.11.1",
     "mocha": "^10.7.3",
-    "mongoose": "^7.8.4",
+    "mongoose": "^8.19.3",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },
