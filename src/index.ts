@@ -34,6 +34,9 @@ function setupGeospatialHandlers(
   schemaType: mongoose.SchemaType,
   operators: string[]
 ): void {
+  if (!("$conditionalHandlers" in schemaType)) {
+    return;
+  }
   schemaType.$conditionalHandlers = schemaType.$conditionalHandlers ?? {};
   for (const op of operators) {
     schemaType.$conditionalHandlers[op] = function (val: any) {
