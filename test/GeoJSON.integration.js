@@ -25,6 +25,7 @@ describe('GeoJSON Schema', () => {
   var featureCollectionData
 
   before(async function () {
+    await mongoose.connect('mongodb://localhost')
     const chai  = await import('chai');
     expect = chai.expect;
   })
@@ -40,9 +41,10 @@ describe('GeoJSON Schema', () => {
       }
     })
 
-    it('should return a valid Point', function () {
+    it('should return a valid Point', async function () {
       var geoJSON = new GeoJSON(pointData)
       var error = geoJSON.validateSync()
+      geoJSON.save()
       expect(error).to.be.an('undefined')
     })
 
