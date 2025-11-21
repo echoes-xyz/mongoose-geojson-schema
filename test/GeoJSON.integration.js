@@ -701,4 +701,115 @@ describe('GeoJSON Schema', () => {
       )
     })
   })
+
+  describe("Geospatial query operators", function () {
+    it("should not throw when using $geoIntersects", function () {
+      const TestSchema = new mongoose.Schema({
+        area: { type: mongoose.Schema.Types.MultiPolygon },
+      });
+      const TestModel = mongoose.model("GeoTest_Intersects", TestSchema);
+      const query = {
+        area: {
+          $geoIntersects: {
+            $geometry: {
+              type: "Polygon",
+              coordinates: [
+                [
+                  [0, 0],
+                  [0, 1],
+                  [1, 1],
+                  [0, 0],
+                ],
+              ],
+            },
+          },
+        },
+      };
+      expect(() => TestModel.find(query).cast(TestModel)).to.not.throw();
+    });
+
+    it("should not throw when using $geoWithin", function () {
+      const TestSchema = new mongoose.Schema({
+        area: { type: mongoose.Schema.Types.MultiPolygon },
+      });
+      const TestModel = mongoose.model("GeoTest_Within", TestSchema);
+      const query = {
+        area: {
+          $geoWithin: {
+            $geometry: {
+              type: "Polygon",
+              coordinates: [
+                [
+                  [0, 0],
+                  [0, 1],
+                  [1, 1],
+                  [0, 0],
+                ],
+              ],
+            },
+          },
+        },
+      };
+      expect(() => TestModel.find(query).cast(TestModel)).to.not.throw();
+    });
+
+    it("should not throw when using $near", function () {
+      const TestSchema = new mongoose.Schema({
+        point: { type: mongoose.Schema.Types.Point },
+      });
+      const TestModel = mongoose.model("GeoTest_Near", TestSchema);
+      const query = {
+        point: {
+          $near: {
+            $geometry: { type: "Point", coordinates: [10, 10] },
+            $maxDistance: 5000,
+          },
+        },
+      };
+      expect(() => TestModel.find(query).cast(TestModel)).to.not.throw();
+    });
+
+    it("should not throw when using $nearSphere", function () {
+      const TestSchema = new mongoose.Schema({
+        point: { type: mongoose.Schema.Types.Point },
+      });
+      const TestModel = mongoose.model("GeoTest_NearSphere", TestSchema);
+      const query = {
+        point: {
+          $nearSphere: {
+            $geometry: { type: "Point", coordinates: [10, 10] },
+            $maxDistance: 5000,
+          },
+        },
+      };
+      expect(() => TestModel.find(query).cast(TestModel)).to.not.throw();
+    });
+
+    it("should throw when using unsupported operator", function () {
+      const TestSchema = new mongoose.Schema({
+        area: { type: mongoose.Schema.Types.MultiPolygon },
+      });
+      const TestModel = mongoose.model("GeoTest_BadOperator", TestSchema);
+      const query = {
+        area: {
+          $invalidGeoOp: {
+            $geometry: {
+              type: "Polygon",
+              coordinates: [
+                [
+                  [0, 0],
+                  [0, 1],
+                  [1, 1],
+                  [0, 0],
+                ],
+              ],
+            },
+          },
+        },
+      };
+      expect(() => TestModel.find(query).cast(TestModel)).to.throw(
+        /Can't use \$invalidGeoOp/
+      );
+    });
+  });
 })

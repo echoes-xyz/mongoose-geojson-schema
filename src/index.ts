@@ -24,11 +24,26 @@ import {
   GeometryCollection as GeometryCollectionType,
   Feature as FeatureType,
   FeatureCollection as FeatureCollectionType,
-  Position
+  Position,
 } from 'geojson';
 
 const { Schema } = mongoose;
 const { Types } = mongoose;
+
+function setupGeospatialHandlers(
+  schemaType: mongoose.SchemaType,
+  operators: string[]
+): void {
+  if (!("$conditionalHandlers" in schemaType)) {
+    return;
+  }
+  schemaType.$conditionalHandlers = schemaType.$conditionalHandlers ?? {};
+  for (const op of operators) {
+    schemaType.$conditionalHandlers[op] = function (val: any) {
+      return val;
+    };
+  }
+}
 
 interface CRS {
   type: 'name' | 'link';
@@ -96,6 +111,12 @@ class Point extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'Point');
+    setupGeospatialHandlers(this, [
+      '$geoIntersects',
+      '$geoWithin',
+      '$near',
+      '$nearSphere',
+    ]);
   }
 
   cast(point: any): PointType {
@@ -165,6 +186,7 @@ class MultiPoint extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'MultiPoint');
+    setupGeospatialHandlers(this, ['$geoIntersects']);
   }
 
   cast(multipoint: any): MultiPointType {
@@ -177,7 +199,9 @@ class MultiPoint extends mongoose.SchemaType {
     }
     // type must be MultiPoint
     if (multipoint.type !== 'MultiPoint') {
-      throw new mongoose.Error(multipoint.type + ' is not a valid GeoJSON type');
+      throw new mongoose.Error(
+        multipoint.type + ' is not a valid GeoJSON type'
+      );
     }
     // check for crs
     if (multipoint.crs) {
@@ -200,6 +224,7 @@ class LineString extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'LineString');
+    setupGeospatialHandlers(this, ['$geoIntersects']);
   }
 
   cast(linestring: any): LineStringType {
@@ -208,7 +233,9 @@ class LineString extends mongoose.SchemaType {
     }
     // type must be LineString
     if (linestring.type !== 'LineString') {
-      throw new mongoose.Error(linestring.type + ' is not a valid GeoJSON type');
+      throw new mongoose.Error(
+        linestring.type + ' is not a valid GeoJSON type'
+      );
     }
     // must have at least two Points
     if (linestring.coordinates.length < 2) {
@@ -235,6 +262,7 @@ class MultiLineString extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'MultiLineString');
+    setupGeospatialHandlers(this, ['$geoIntersects']);
   }
 
   cast(multilinestring: any): MultiLineStringType {
@@ -267,6 +295,7 @@ class Polygon extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'Polygon');
+    setupGeospatialHandlers(this, ['$geoIntersects', '$geoWithin']);
   }
 
   cast(polygon: any): PolygonType {
@@ -321,6 +350,7 @@ class MultiPolygon extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'MultiPolygon');
+    setupGeospatialHandlers(this, ['$geoIntersects', '$geoWithin']);
   }
 
   cast(multipolygon: any): MultiPolygonType {
@@ -333,7 +363,9 @@ class MultiPolygon extends mongoose.SchemaType {
     }
     // type must be Polygon
     if (multipolygon.type !== 'MultiPolygon') {
-      throw new mongoose.Error(multipolygon.type + ' is not a valid GeoJSON type');
+      throw new mongoose.Error(
+        multipolygon.type + ' is not a valid GeoJSON type'
+      );
     }
     // check for crs
     if (multipolygon.crs) {
@@ -356,12 +388,13 @@ class Geometry extends mongoose.SchemaType {
 
   constructor(key: string, options?: any) {
     super(key, options, 'Geometry');
+    setupGeospatialHandlers(this, ['$geoIntersects']);
   }
 
   cast(geometry: any): GeometryType {
     // must be an array (object)
     if (!geometry.type) {
-      throw new mongoose.Error('Geometry must must have a type');
+      throw new mongoose.Error('Geometry must have a type');
     }
     // check for crs
     if (geometry.crs) {
@@ -476,7 +509,9 @@ class FeatureCollection extends mongoose.SchemaType {
       );
     }
     if (!featurecollection.features) {
-      throw new mongoose.Error('FeatureCollections must have a features object');
+      throw new mongoose.Error(
+        'FeatureCollections must have a features object'
+      );
     }
     // check for crs
     if (featurecollection.crs) {
@@ -488,7 +523,9 @@ class FeatureCollection extends mongoose.SchemaType {
   }
 }
 
-function validateFeatureCollection(featurecollection: FeatureCollectionType): FeatureCollectionType {
+function validateFeatureCollection(
+  featurecollection: FeatureCollectionType
+): FeatureCollectionType {
   for (let i = 0; i < featurecollection.features.length; i++) {
     validateFeature(featurecollection.features[i]);
   }
@@ -533,5 +570,5 @@ export {
   Geometry,
   GeometryCollection,
   Feature,
-  FeatureCollection
+  FeatureCollection,
 };
