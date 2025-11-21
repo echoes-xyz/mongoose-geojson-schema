@@ -160,6 +160,7 @@ npm test
 * [Joshua Kopecek](https://github.com/joshkopecek)
 * [Mark Stosberg](https://github.com/markstos)
 * [Ben Dalton](https://github.com/bendalton)
+* [Moritz Wenko](https://github.com/mwenko)
 
 ## License
 
